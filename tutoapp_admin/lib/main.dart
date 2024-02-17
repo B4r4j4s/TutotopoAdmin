@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/UserProvider.dart';
+import 'views/Login.dart';
+import 'views/AppBarNavegador.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,29 +14,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider<UserProvider>(
+            create: (_) => UserProvider(),
+          ),
+          /*ChangeNotifierProvider<CitaProvider>(
+      create: (_) => CitaProvider(),
+    ),*/
+        ],
+        child: MaterialApp(
+          title: 'ADMIN',
+          theme: ThemeData(
+            // This is the theme of your application.
+
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+            useMaterial3: true,
+          ),
+          home: const Login(),
+        ));
   }
 }
 
@@ -120,6 +120,68 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class DragAndDropScreen extends StatefulWidget {
+  @override
+  _DragAndDropScreenState createState() => _DragAndDropScreenState();
+}
+
+class _DragAndDropScreenState extends State<DragAndDropScreen> {
+  String draggedItem = 'Item to Drag';
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection:
+          TextDirection.ltr, // o TextDirection.rtl según sea necesario
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Drag and Drop Example'),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Draggable<String>(
+                data: draggedItem,
+                child: Container(
+                  color: Colors.blue,
+                  padding: EdgeInsets.all(10),
+                  child: Text('Drag me'),
+                ),
+                feedback: Container(
+                  color: Colors.blue.withOpacity(0.5),
+                  padding: EdgeInsets.all(10),
+                  child: Text(draggedItem),
+                ),
+                childWhenDragging: Container(),
+              ),
+              const SizedBox(height: 20),
+              DragTarget<String>(
+                builder: (context, List<String?> candidateData, rejectedData) {
+                  return Container(
+                    color: Colors.green,
+                    padding: const EdgeInsets.all(20),
+                    child: Text('Drop here'),
+                  );
+                },
+                onWillAccept: (String? data) {
+                  // Puedes proporcionar alguna lógica aquí si quieres permitir o no la aceptación.
+                  return true;
+                },
+                onAccept: (String data) {
+                  setState(() {
+                    draggedItem = data;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
