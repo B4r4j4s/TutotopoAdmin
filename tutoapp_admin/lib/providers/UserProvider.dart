@@ -24,20 +24,22 @@ class UserProvider with ChangeNotifier {
 
   User get user => _user;
 
-  void setToken(String t) {
-    _user.token = t;
-  }
-
   String getMail() {
     return _user.mail;
+  }
+
+  void setMail(String t) {
+    _user.mail = t;
   }
 
   User getUser() {
     return _user;
   }
 
-  String getToken() {
-    return _user.token;
+  void generateData() {
+    _user.ID = '1';
+    _user.mail = 'admin@academicos.udg.mx';
+    _user.name = 'ADMIN';
   }
 
   bool insertData(Map<String, dynamic> data) {

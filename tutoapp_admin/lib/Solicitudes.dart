@@ -263,14 +263,11 @@ Future<String> asignStudent(int idSt, int idT) async {
 Future<Map<String, dynamic>> getAdminInfo(context) async {
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
-  // Obtén el token desde Flutter Secure Storage
   final String? token = await secureStorage.read(key: 'access_token');
-
   if (token == null) {
     return {'Error': 'tokent'};
   }
   final url = Uri.parse('https://tutoapp.onrender.com/admin/info');
-  print('url: $url');
   //print('token: ');
   //print(accessToken);
 

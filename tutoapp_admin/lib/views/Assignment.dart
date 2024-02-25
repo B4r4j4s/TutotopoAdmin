@@ -3,6 +3,161 @@ import 'package:http/http.dart';
 import '../Entitys.dart';
 import '../Solicitudes.dart';
 
+List<Map<String, dynamic>> estudiantesPrueba = [
+  {
+    "Code": "218576376",
+    "FirstSurname": "Bañuelos",
+    "ID": 58,
+    "Mail": "yahir.banuelos5763@alumnos.udg.mx",
+    "Name": "Yahir Alejandro",
+    "SecondSurname": "Leo",
+    "TutorID": 1,
+  },
+  {
+    "Code": "228579452",
+    "FirstSurname": "Aguilar",
+    "ID": 59,
+    "Mail": "edgar@example.com",
+    "Name": "Edgar",
+    "SecondSurname": "Garcia",
+    "TutorID": 1
+  },
+  {
+    "Code": "228575452",
+    "FirstSurname": "Aguilar",
+    "ID": 60,
+    "Mail": "ulises@example.com",
+    "Name": "Ulises",
+    "SecondSurname": "Garnacho",
+    "TutorID": 1
+  },
+  {
+    "Code": "238574512",
+    "FirstSurname": "Gomez",
+    "ID": 61,
+    "Mail": "maria@example.com",
+    "Name": "Maria",
+    "SecondSurname": "Lopez",
+    "TutorID": 2
+  },
+  {
+    "Code": "248572634",
+    "FirstSurname": "Perez",
+    "ID": 62,
+    "Mail": "carlos@example.com",
+    "Name": "Carlos",
+    "SecondSurname": "Rodriguez",
+    "TutorID": 2
+  },
+  {
+    "Code": "258573478",
+    "FirstSurname": "Vargas",
+    "ID": 63,
+    "Mail": "laura@example.com",
+    "Name": "Laura",
+    "SecondSurname": "Hernandez",
+    "TutorID": 1
+  },
+  {
+    "Code": "268571233",
+    "FirstSurname": "Torres",
+    "ID": 64,
+    "Mail": "alberto@example.com",
+    "Name": "Alberto",
+    "SecondSurname": "Gomez",
+    "TutorID": 2
+  },
+  {
+    "Code": "278574896",
+    "FirstSurname": "Hernandez",
+    "ID": 65,
+    "Mail": "diana@example.com",
+    "Name": "Diana",
+    "SecondSurname": "Martinez",
+    "TutorID": 2
+  },
+  {
+    "Code": "288579010",
+    "FirstSurname": "Mendoza",
+    "ID": 66,
+    "Mail": "raul@example.com",
+    "Name": "Raul",
+    "SecondSurname": "Santos",
+    "TutorID": 1
+  },
+  {
+    "Code": "298571934",
+    "FirstSurname": "Sanchez",
+    "ID": 67,
+    "Mail": "nancy@example.com",
+    "Name": "Nancy",
+    "SecondSurname": "Torres",
+    "TutorID": 1
+  },
+  {
+    "Code": "308573567",
+    "FirstSurname": "Gutierrez",
+    "ID": 68,
+    "Mail": "juan@example.com",
+    "Name": "Juan",
+    "SecondSurname": "Gomez",
+    "TutorID": 2
+  },
+  {
+    "Code": "318572345",
+    "FirstSurname": "Ramos",
+    "ID": 69,
+    "Mail": "carmen@example.com",
+    "Name": "Carmen",
+    "SecondSurname": "Lopez",
+    "TutorID": 1
+  },
+  {
+    "Code": "328578901",
+    "FirstSurname": "Jimenez",
+    "ID": 70,
+    "Mail": "roberto@example.com",
+    "Name": "Roberto",
+    "SecondSurname": "Perez",
+    "TutorID": 2
+  },
+  {
+    "Code": "338571234",
+    "FirstSurname": "Fuentes",
+    "ID": 71,
+    "Mail": "alicia@example.com",
+    "Name": "Alicia",
+    "SecondSurname": "Garcia",
+  },
+  {
+    "Code": "348574567",
+    "FirstSurname": "Vega",
+    "ID": 72,
+    "Mail": "martin@example.com",
+    "Name": "Martin",
+    "SecondSurname": "Hernandez",
+  },
+];
+
+List<Map<String, dynamic>> tutoresPrueba = [
+  {
+    "Code": "346709587",
+    "FirstSurname": "García",
+    "ID": 1,
+    "Mail": "juangarcia@academicos.udg.mx",
+    "Name": "Juan",
+    "SecondSurname": "Pérez"
+  },
+  {
+    "Code": "218576373",
+    "FirstSurname": "Valencia",
+    "ID": 2,
+    "Mail": "correo3@ejemplo.com",
+    "Name": "Carlos",
+    "SecondSurname": "Carlson"
+  },
+];
+
 class Assignment extends StatefulWidget {
   const Assignment({super.key});
 
@@ -16,40 +171,37 @@ class _AssignmentState extends State<Assignment> {
 
   @override
   void initState() {
-    obtainThings("tutors").then((values) {
+    /*obtainThings("tutors").then((values) {
       if (values[0].containsKey('Error')) {
         print(values[0]['Error']);
-      } else {
-        //Tratamiento de datos
+      } else {*/
+    //Tratamiento de datos
 
-        for (Map<String, dynamic> value in values) {
-          tutors.add(Tutor.fromMap(value));
+    for (Map<String, dynamic> value in tutoresPrueba) {
+      tutors.add(Tutor.fromMap(value));
+    }
+
+    /*obtainThings("students").then((stds) => {
+          if (stds[0].containsKey('Error'))
+            {print(stds[0]['Error'])}
+          else
+            {*/
+    for (Map<String, dynamic> s in estudiantesPrueba) {
+      if (s.containsKey('TutorID')) {
+        var tutorIndex = tutors.indexWhere((tutor) => tutor.id == s['TutorID']);
+        if (tutorIndex != -1) {
+          tutors[tutorIndex].myStudents.add(Student.fromMap(s));
+        } else {
+          assignless.add(Student.fromMap(s));
         }
-
-        obtainThings("students").then((stds) => {
-              if (stds[0].containsKey('Error'))
-                {print(stds[0]['Error'])}
-              else
-                {
-                  for (Map<String, dynamic> s in stds)
-                    {
-                      if (s.containsKey('tutor'))
-                        {
-                          //try{
-                          tutors
-                              .firstWhere((tutor) => tutor.id == s['tutor'])
-                              .addStudent(s)
-                          //} catch (e) {
-                          //  print('Error al agregar el estudiante al tutor: $e');
-                          // }
-                        }
-                      else
-                        {assignless.add(Student.fromMap(s))}
-                    }
-                }
-            });
+      } else {
+        assignless.add(Student.fromMap(s));
       }
-    });
+    }
+    //    }
+    //  });
+    //}
+    //});
 
     super.initState();
   }
@@ -70,37 +222,55 @@ class _AssignmentState extends State<Assignment> {
               trailing: IconButton(
                 padding: const EdgeInsets.all(10),
                 icon: const Icon(Icons.person_add_alt, size: 25),
-                onPressed: () {
-                  mostrarDialogoRegistrarProfesor(context);
+                onPressed: () async {
+                  Tutor? newTutor = await showDialog<Tutor>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return RegistrarProfesorDialog();
+                    },
+                  );
+                  if (newTutor != null) {
+                    setState(() {
+                      tutors.add(newTutor);
+                    });
+                  }
+                  //mostrarDialogoRegistrarProfesor(context);
                 },
               ),
             ),
           ),
           Flexible(
-              flex: 3,
+              //flex: 2,
+              fit: FlexFit.tight,
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ListView.builder(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: 20,
+                  itemCount: tutors.length,
                   itemBuilder: (context, index) {
-                    return DragTarget(
-                      builder:
-                          (context, List<dynamic> candidateData, rejectedData) {
+                    return DragTarget<Student>(
+                      builder: (context, List<Student?> candidateData,
+                          rejectedData) {
                         return TutorDisplayer(
                           index: index,
+                          tutor: tutors[index],
                         );
                       },
                       onWillAccept: (data) {
-                        // Puedes proporcionar alguna lógica aquí si quieres permitir o no la aceptación.
+                        print('onWillAccept ejecutado');
                         return true;
                       },
-                      onAccept: (data) {
-                        print(data);
-                        int idst = 0;
-                        asignStudent(idst, tutors[index].id).then((value) => {
+                      onAccept: (Student data) {
+                        print('se agrego un estudiante');
+                        print(data.name);
+                        print(index);
+                        setState(() {
+                          tutors[index].myStudents.add(data);
+                        });
+
+                        /*asignStudent(idst, tutors[index].id).then((value) => {
                               if (value.contains('Error'))
                                 {print(value)}
                               else
@@ -109,7 +279,7 @@ class _AssignmentState extends State<Assignment> {
                                     //tutors[index].addStudent()
                                   })
                                 }
-                            });
+                            });*/
                       },
                     );
                   },
@@ -117,7 +287,7 @@ class _AssignmentState extends State<Assignment> {
               )),
           if (assignless.isNotEmpty)
             Flexible(
-              flex: 1,
+              //flex: 1,
               child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(20),
@@ -127,9 +297,13 @@ class _AssignmentState extends State<Assignment> {
                     borderRadius: const BorderRadius.all(Radius.circular(6))),
                 height: 200,
                 child: ListView.builder(
-                  itemCount: 2,
+                  itemCount: assignless.length,
                   itemBuilder: (context, index) {
-                    return buildStudentDraggable(index);
+                    return buildStudentDraggable(assignless[index], () {
+                      setState(() {
+                        assignless.removeAt(index);
+                      });
+                    });
                   },
                 ),
               ),
@@ -139,9 +313,9 @@ class _AssignmentState extends State<Assignment> {
     );
   }
 
-  Widget buildStudentDraggable(int index) {
+  Widget buildStudentDraggable(Student student, Function() callback) {
     return Draggable(
-      data: 'Alumno ${index + 1}',
+      data: student,
       feedback: Container(
         height: 30,
         width: 100,
@@ -151,16 +325,21 @@ class _AssignmentState extends State<Assignment> {
           borderRadius: const BorderRadius.all(Radius.circular(6)),
         ),
         child: Text(
-          'Alumno ${index + 1}',
+          student.name,
           style: const TextStyle(
               fontSize: 12, color: Colors.black, fontStyle: FontStyle.italic),
         ),
       ),
       childWhenDragging: Container(),
       child: ListTile(
-        title: Text('Alumno ${index + 1}'),
-        subtitle: Text('219189713'),
+        title: Text(student.name),
+        subtitle: Text(student.mail),
       ),
+      onDragCompleted: () {
+        // Esta función se ejecutará cuando el Draggable sea soltado con éxito
+        print("Draggable completado con éxito. Fue aceptado.");
+        callback();
+      },
     );
   }
 }
@@ -195,7 +374,7 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
             children: [
               TextFormField(
                 controller: nombreController,
-                decoration: InputDecoration(labelText: 'Nombre'),
+                decoration: const InputDecoration(labelText: 'Nombre'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese el nombre';
@@ -205,7 +384,8 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
               ),
               TextFormField(
                 controller: apellidoPaternoController,
-                decoration: InputDecoration(labelText: 'Apellido Paterno'),
+                decoration:
+                    const InputDecoration(labelText: 'Apellido Paterno'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese el apellido paterno';
@@ -215,7 +395,8 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
               ),
               TextFormField(
                 controller: apellidoMaternoController,
-                decoration: InputDecoration(labelText: 'Apellido Materno'),
+                decoration:
+                    const InputDecoration(labelText: 'Apellido Materno'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese el apellido materno';
@@ -225,7 +406,7 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
               ),
               TextFormField(
                 controller: correoController,
-                decoration: InputDecoration(labelText: 'Correo'),
+                decoration: const InputDecoration(labelText: 'Correo'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese el correo';
@@ -235,7 +416,7 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
               ),
               TextFormField(
                 controller: codigoController,
-                decoration: InputDecoration(labelText: 'Código'),
+                decoration: const InputDecoration(labelText: 'Código'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese el código';
@@ -246,7 +427,7 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
               TextFormField(
                 controller: contrasenaController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Contraseña'),
+                decoration: const InputDecoration(labelText: 'Contraseña'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Ingrese la contraseña';
@@ -263,7 +444,7 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
           onPressed: () {
             Navigator.of(context).pop(); // Cerrar el diálogo
           },
-          child: Text('Cancelar'),
+          child: const Text('Cancelar'),
         ),
         ElevatedButton(
           onPressed: () {
@@ -272,7 +453,7 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
               registrarProfesor();
             }
           },
-          child: Text('Registrar'),
+          child: const Text('Registrar'),
         ),
       ],
     );
@@ -287,10 +468,13 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
     String codigo = codigoController.text;
     String contrasena = contrasenaController.text;
 
-    // Realizar la lógica de registro con los datos obtenidos
+    // Hacer la llamada para el registro
+
+    // crear el tutor con los datos completos
+    Tutor tutor = Tutor(0, '$nombre $apellidoPaterno $apellidoMaterno', correo);
 
     // Cerrar el diálogo
-    Navigator.of(context).pop();
+    Navigator.of(context).pop(tutor);
   }
 }
 
@@ -305,7 +489,8 @@ void mostrarDialogoRegistrarProfesor(BuildContext context) {
 
 class TutorDisplayer extends StatefulWidget {
   final int index;
-  const TutorDisplayer({super.key, required this.index});
+  final Tutor tutor;
+  const TutorDisplayer({super.key, required this.index, required this.tutor});
 
   @override
   State<TutorDisplayer> createState() => _TutorDisplayerState();
@@ -316,76 +501,80 @@ class _TutorDisplayerState extends State<TutorDisplayer> {
   String recoveredData = '';
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onDoubleTap: () {
-        setState(() {
-          show = !show;
-        });
-      },
-      child: DragTarget(
-        builder: (context, List<dynamic> candidateData, rejectedData) {
-          return Card(
-            color: Colors.orange.shade200,
-            elevation: 20,
-            shadowColor: Colors.black45,
-            child: ListTile(
-              onTap: () {
-                showAlumnosDialog(context, 'Profesor 1', [
-                  'Juanito 1',
-                  'Juanito 2',
-                  'Juanito 3',
-                  'Juanito 4',
-                  'Juanito 5'
-                ]);
-              },
-              title: Text('Profesor ${widget.index + 1}',
-                  style: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.bold)),
-              trailing: const Text('2',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              subtitle: Text('maestro@academicos.udg.mx'),
-            ),
-          );
+    return Container(
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade400, // Color de fondo naranja
+        borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5), // Sombra con opacidad
+            spreadRadius: 2,
+            blurRadius: 4,
+            offset: Offset(0, 3), // Desplazamiento de la sombra
+          ),
+        ],
+      ),
+      child: ListTile(
+        onTap: () {
+          showAlumnosDialog(
+              context, widget.tutor.name, widget.tutor.myStudents);
         },
-        onWillAccept: (data) {
-          // Puedes proporcionar alguna lógica aquí si quieres permitir o no la aceptación.
-          return true;
-        },
-        onAccept: (data) {
-          setState(() {
-            recoveredData = data.toString();
-          });
-        },
+        title: Text(
+          widget.tutor.name,
+          style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white), // Texto blanco para contraste
+        ),
+        trailing: Text(
+          widget.tutor.myStudents.length.toString(),
+          style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white), // Texto blanco para contraste
+        ),
+        subtitle: Text(
+          widget.tutor.mail,
+          style: const TextStyle(
+              color: Colors.white), // Texto blanco para contraste
+        ),
       ),
     );
   }
 
   void showAlumnosDialog(
-      BuildContext context, String profesor, List<String> alumnos) {
+      BuildContext context, String profesor, List<Student> alumnos) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(profesor),
+          title: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(profesor)),
           content: Container(
-            width: double.maxFinite,
+            width: 300,
+            height: double.infinity,
+            padding: const EdgeInsets.all(10),
             child: ListView.builder(
               itemCount: alumnos.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(alumnos[index]),
+                  leading: const Icon(Icons.face_rounded),
+                  title: Text(alumnos[index].name),
+                  subtitle: Text(alumnos[index].mail),
                 );
               },
             ),
           ),
-          actions: [
+          /*actions: [
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Cierra el diálogo
               },
               child: Text('Cerrar'),
             ),
-          ],
+          ],*/
         );
       },
     );

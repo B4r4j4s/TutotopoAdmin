@@ -31,6 +31,12 @@ class Tutor {
     );
   }
 
+  void showStudent() {
+    for (Student student in myStudents) {
+      print(student.name);
+    }
+  }
+
   void addStudent(Map<String, dynamic> data) {
     if (data.containsKey("Student")) {
       myStudents.add(Student(

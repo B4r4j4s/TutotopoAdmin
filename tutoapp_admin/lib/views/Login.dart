@@ -162,12 +162,21 @@ class _LoginState extends State<Login> {
             }
           else
             {
-              //showCustomSnackBar(
-              //   context, response, Colors.green, const Duration(seconds: 2)),
+              showCustomSnackBar(
+                  context, response, Colors.green, const Duration(seconds: 2)),
+              //context.watch<UserProvider>().setMail(mail),
+              print('Entrando al get admin info'),
+              getAdminInfo(context).then((value) {
+                if (value.containsKey('Error')) {
+                  print(value['Error']);
+                } else {
+                  context.read<UserProvider>().insertData(value);
+                }
+              }),
               Navigator.pushReplacement(
                 context,
                 PageRouteBuilder(
-                  transitionDuration: const Duration(milliseconds: 1000),
+                  transitionDuration: const Duration(milliseconds: 100),
                   pageBuilder: (_, __, ___) => const CentralApp(),
                   transitionsBuilder: (_, animation, __, child) {
                     const begin = Offset(1.0, 0.0);
@@ -184,14 +193,6 @@ class _LoginState extends State<Login> {
                   },
                 ),
               ),
-              /*
-              getAdminInfo(context).then((value) {
-                if (value.containsKey('Error')) {
-                  print(value['Error']);
-                } else {
-                  context.read<UserProvider>().insertData(value);
-                }
-              })*/
             }
         });
   }
@@ -201,7 +202,7 @@ class _LoginState extends State<Login> {
     final snackBar = SnackBar(
       content: Text(
         text,
-        style: TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.white),
       ),
       backgroundColor: bgColor,
       duration: duration,
