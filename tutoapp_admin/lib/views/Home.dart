@@ -52,6 +52,7 @@ class _HomeState extends State<Home> {
   late TextEditingController content;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final List<Aviso> anuncios = [];
+  bool dataArrived = false;
   @override
   void initState() {
     title = TextEditingController();
@@ -63,6 +64,9 @@ class _HomeState extends State<Home> {
         for (Map<String, dynamic> value in values) {
           anuncios.add(insertAviso(value));
         }
+        setState(() {
+          dataArrived = true;
+        });
       }
     });
 
@@ -145,26 +149,32 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Divider(thickness: 4),
           ),*/
-          Expanded(
-              child: ListView.builder(
-            itemCount: anuncios.length,
-            padding: const EdgeInsets.all(20), // Ajustar la longitud
-            itemBuilder: (context, index) {
-              return AnuncioCard(
-                aviso: anuncios[index],
-                callback: (id) {
-                  eliminateThings(id, 'announcements').then(
-                    (value) {
-                      print(value);
-                      setState(() {
-                        anuncios.removeAt(index);
-                      });
-                    },
-                  );
-                },
-              );
-            },
-          ))
+          if (dataArrived)
+            Expanded(
+                child: ListView.builder(
+              itemCount: anunciosPruebas.length,
+              padding: const EdgeInsets.all(20), // Ajustar la longitud
+              itemBuilder: (context, index) {
+                return AnuncioCard(
+                  aviso: anunciosPruebas[index],
+                  callback: (id) {
+                    eliminateThings(id, 'announcements').then(
+                      (value) {
+                        //print(value);
+                        setState(() {
+                          anuncios.removeAt(index);
+                        });
+                      },
+                    );
+                  },
+                );
+              },
+            ))
+          else
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: const CircularProgressIndicator(),
+            )
         ],
       ),
     );

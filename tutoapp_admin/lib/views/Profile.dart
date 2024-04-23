@@ -11,8 +11,8 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  String name = '["NOMBRE"]';
-  String mail = '["CORREO"]';
+  String name = 'Admin';
+  String mail = 'admin@academicos.udg.mx';
 
   late TextEditingController pass;
   late TextEditingController passC;
@@ -59,8 +59,7 @@ class _ProfileState extends State<Profile> {
           Row(mainAxisSize: MainAxisSize.max, children: [
             const LabelBox(text: ' Correo:'),
             const SizedBox(width: 10),
-            Expanded(
-                child: DataBox(text: context.read<UserProvider>().getMail()))
+            Expanded(child: DataBox(text: mail))
           ]),
           const SizedBox(height: 40),
           ElevatedButton(

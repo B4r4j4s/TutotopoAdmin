@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tutoapp_admin/Solicitudes.dart';
 import 'package:tutoapp_admin/providers/UserProvider.dart';
 
@@ -17,6 +18,51 @@ class _LoginState extends State<Login> {
   bool _isPasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String errorMessage = '';
+
+  void logearse(String mail, String pass, BuildContext context) {
+    logAdmin(mail, pass).then((response) => {
+          if (response.contains('Error'))
+            {
+              if (response.contains('401'))
+                {print('Contraseña Incorrecta')}
+              else
+                {print(response)}
+            }
+          else
+            {
+              showCustomSnackBar(
+                  context, response, Colors.green, const Duration(seconds: 2)),
+              //context.watch<UserProvider>().setMail(mail),
+              getAdminInfo(context).then((value) {
+                if (value.containsKey('Error')) {
+                  print(value['Error']);
+                } else {
+                  context.read<UserProvider>().insertData(value);
+                }
+              }),
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 100),
+                  pageBuilder: (_, __, ___) => const CentralApp(),
+                  transitionsBuilder: (_, animation, __, child) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
+
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
+
+                    var offsetAnimation = animation.drive(tween);
+
+                    return SlideTransition(
+                        position: offsetAnimation, child: child);
+                  },
+                ),
+              ),
+            }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,52 +195,6 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
-  }
-
-  void logearse(String mail, String pass, context) {
-    logAdmin(mail, pass).then((response) => {
-          if (response.contains('Error'))
-            {
-              if (response.contains('401'))
-                {print('Contraseña Incorrecta')}
-              else
-                {print(response)}
-            }
-          else
-            {
-              showCustomSnackBar(
-                  context, response, Colors.green, const Duration(seconds: 2)),
-              //context.watch<UserProvider>().setMail(mail),
-              print('Entrando al get admin info'),
-              getAdminInfo(context).then((value) {
-                if (value.containsKey('Error')) {
-                  print(value['Error']);
-                } else {
-                  context.read<UserProvider>().insertData(value);
-                }
-              }),
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: const Duration(milliseconds: 100),
-                  pageBuilder: (_, __, ___) => const CentralApp(),
-                  transitionsBuilder: (_, animation, __, child) {
-                    const begin = Offset(1.0, 0.0);
-                    const end = Offset.zero;
-                    const curve = Curves.easeInOut;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    var offsetAnimation = animation.drive(tween);
-
-                    return SlideTransition(
-                        position: offsetAnimation, child: child);
-                  },
-                ),
-              ),
-            }
-        });
   }
 
   void showCustomSnackBar(

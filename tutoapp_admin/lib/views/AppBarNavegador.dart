@@ -5,8 +5,8 @@ import 'QA.dart';
 import 'Notify.dart';
 import 'Settings.dart';
 import 'Reports.dart';
-import 'Chatbot.dart';
 import 'Assignment.dart';
+import 'Sugerencias.dart';
 
 class CentralApp extends StatefulWidget {
   const CentralApp({super.key});
@@ -17,33 +17,52 @@ class CentralApp extends StatefulWidget {
 
 class _CentralAppState extends State<CentralApp> {
   List<Widget> views = [
-    const Home(),
+    const Home(), //HOME
     const Profile(),
-    const QA(),
+    const Assignment(), //ASIGNACION
+    const QA(), //QA
+    const Reports(), // REPORTES
     const Notifications(),
     const Settings(),
-    const Reports(),
-    ChatBot(),
-    const Assignment()
+    const Sugerencias()
   ];
-  var index = 7;
+
+  var index = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
         children: [
-          // Menu (Left Sidebar)
+          // Menu
           Container(
-            width: 260, // Adjust the width of your menu as needed
-            color: Colors.grey[400],
+            width: 260,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: const Offset(8, 0),
+                ),
+              ],
+              color: Colors.grey.shade300, // Color del contenedor
+              borderRadius: BorderRadius.circular(
+                  10), // Opcional: agregar esquinas redondeadas
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
                   padding: EdgeInsets.all(10),
-                  child: Icon(
-                    Icons.ac_unit_rounded,
-                    size: 40,
+                  child: Text(
+                    'TutoApp ADMIN',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
                   ),
                 ),
                 MenuOp(
@@ -72,9 +91,9 @@ class _CentralAppState extends State<CentralApp> {
                   icon: Icons.assignment_ind_outlined,
                   text: 'Asignacion',
                   onTap: () {
-                    if (index != 1) {
+                    if (index != 2) {
                       setState(() {
-                        index = 7;
+                        index = 2;
                       });
                     }
                   },
@@ -83,66 +102,79 @@ class _CentralAppState extends State<CentralApp> {
                   icon: Icons.question_mark_outlined,
                   text: 'Preguntas frecuentes',
                   onTap: () {
-                    setState(() {
-                      index = 2;
-                    });
-                  },
-                ),
-                MenuOp(
-                  icon: Icons.messenger_outline_sharp,
-                  text: 'Chatbot',
-                  onTap: () {
-                    setState(() {
-                      index = 6;
-                    });
+                    if (index != 3) {
+                      setState(() {
+                        index = 3;
+                      });
+                    }
                   },
                 ),
                 MenuOp(
                   icon: Icons.align_vertical_bottom_rounded,
                   text: 'Reportes',
                   onTap: () {
-                    setState(() {
-                      index = 5;
-                    });
+                    if (index != 4) {
+                      setState(() {
+                        index = 4;
+                      });
+                    }
+                  },
+                ),
+                MenuOp(
+                  icon: Icons.message_rounded,
+                  text: 'Soporte',
+                  onTap: () {
+                    if (index != 7) {
+                      setState(() {
+                        index = 7;
+                      });
+                    }
                   },
                 ),
                 MenuOp(
                   icon: Icons.notifications_active_outlined,
                   text: 'Notificaciones',
                   onTap: () {
-                    setState(() {
-                      index = 3;
-                    });
+                    if (index != 5) {
+                      setState(() {
+                        index = 5;
+                      });
+                    }
                   },
                 ),
                 MenuOp(
                   icon: Icons.settings_applications,
                   text: 'Configuraciones',
                   onTap: () {
-                    setState(() {
-                      index = 4;
-                    });
+                    if (index != 6) {
+                      setState(() {
+                        index = 6;
+                      });
+                    }
                   },
                 ),
                 Expanded(child: Container()),
-                ListTile(
-                  title: const Text(
-                    'Logout',
-                    style: TextStyle(
-                      color: Colors.red, // Set text color to red
-                      fontWeight:
-                          FontWeight.bold, // Optionally, make the text bold
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ListTile(
+                    title: const Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.red, // Set text color to red
+                        fontWeight:
+                            FontWeight.bold, // Optionally, make the text bold
+                      ),
                     ),
-                  ),
-                  onTap: () {
-                    /*deleteAccessToken().then((value) => {
+                    onTap: () {
+                      /*deleteAccessToken().then((value) => {
                         showMsg(context, 'Saliendo...', Colors.yellow.shade400),
                         Future.delayed(const Duration(seconds: 3), () {
                           Navigator.pushReplacementNamed(context, '/login');
                         })
                       });*/
-                  },
-                ),
+                    },
+                  ),
+                )
               ],
             ),
           ),
@@ -194,6 +226,21 @@ class _MenuOpState extends State<MenuOp> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(
+        color: Colors.amber,
+        strokeWidth: 6,
       ),
     );
   }

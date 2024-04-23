@@ -46,3 +46,82 @@ class Tutor {
     }
   }
 }
+
+class Appointment {
+  int id;
+  DateTime createdAt;
+  DateTime updatedAt;
+  DateTime? deletedAt;
+  String sName;
+  String sMail;
+  String sCode;
+  String tName;
+  String tMail;
+  String tCode;
+  String reason;
+  DateTime? appointmentDateTime;
+  String? place;
+  String category;
+  String status;
+
+  Appointment({
+    required this.id,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+    required this.sName,
+    required this.sMail,
+    required this.sCode,
+    required this.tName,
+    required this.tMail,
+    required this.tCode,
+    required this.reason,
+    required this.appointmentDateTime,
+    this.place,
+    required this.category,
+    required this.status,
+  });
+
+  factory Appointment.fromMap(Map<String, dynamic> map) {
+    return Appointment(
+      id: map["ID"],
+      createdAt: DateTime.parse(map["CreatedAt"]),
+      updatedAt: DateTime.parse(map["UpdatedAt"]),
+      deletedAt:
+          map["DeletedAt"] != null ? DateTime.parse(map["DeletedAt"]) : null,
+      sName: map["StudentName"] +
+          ' ' +
+          map["StudentFirstSurname"] +
+          ' ' +
+          map["StudentSecondSurname"],
+      sMail: map["StudentMail"],
+      sCode: map["StudentCode"],
+      tName: map["TutorName"] +
+          ' ' +
+          map["TutorFirstSurname"] +
+          ' ' +
+          map["TutorSecondSurname"],
+      tMail: map["TutorMail"],
+      tCode: map["TutorCode"],
+      reason: map["Reason"],
+      appointmentDateTime: map["AppointmentDateTime"] != null
+          ? DateTime.parse(map["AppointmentDateTime"])
+          : null,
+      place: map["Place"],
+      category: map["Category"],
+      status: map["Status"],
+    );
+  }
+
+  static List<Appointment> fromMapList(List<Map<String, dynamic>> mapList) {
+    return mapList.map((map) => Appointment.fromMap(map)).toList();
+  }
+}
+
+class IndividualBar {
+  final int x;
+  final double y;
+  final String lb;
+
+  IndividualBar({required this.x, required this.y, required this.lb});
+}

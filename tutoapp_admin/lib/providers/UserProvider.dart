@@ -2,15 +2,12 @@ import 'package:flutter/material.dart';
 //import '../Entidades.dart'; //import '../widgets/customOutputs.dart';
 
 class User {
-  late String ID;
-  late String code;
-  late String name;
-  late String lastnameA;
-  late String lastnameB;
-  late String mail;
-  late String token;
-  //late bool isTutor;
-  //late Tutor myTutor;
+  String ID = '';
+  String code = '';
+  String name = '';
+  String lastnameA = '';
+  String lastnameB = '';
+  String mail = '';
 
   User();
 
@@ -43,7 +40,7 @@ class UserProvider with ChangeNotifier {
   }
 
   bool insertData(Map<String, dynamic> data) {
-    print('Entr al provider?');
+    print('Entra al provider');
     _user.name = data['Name'];
     _user.lastnameA = data['FirstSurname'];
     _user.lastnameB = data['SecondSurname'];

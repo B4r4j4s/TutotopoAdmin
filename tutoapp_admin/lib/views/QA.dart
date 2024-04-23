@@ -55,6 +55,7 @@ class _QAState extends State<QA> {
   late TextEditingController a;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final List<QAs> questions = [];
+  bool dataArrived = false;
   @override
   void initState() {
     q = TextEditingController();
@@ -67,6 +68,9 @@ class _QAState extends State<QA> {
           questions.add(insertQAs(value));
         }
       }
+    });
+    setState(() {
+      dataArrived = true;
     });
     super.initState();
   }
@@ -129,12 +133,11 @@ class _QAState extends State<QA> {
                                 };
                                 createThings(data, term).then((value) {
                                   if (value.contains('Error')) {
-                                    print(value);
-                                  } else {
-                                    setState(() {
-                                      questions.add(QAs(q.text, a.text));
-                                    });
-                                  }
+                                    //print(value);
+                                  } else {}
+                                });
+                                setState(() {
+                                  questions.add(QAs(q.text, a.text));
                                 });
                               }
                             },
@@ -148,13 +151,22 @@ class _QAState extends State<QA> {
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Divider(thickness: 4),
           ),*/
-          Expanded(
-              child: QAPost(
-            QAList: questions,
-            callback: (index) {
-              print(index);
-            },
-          ))
+          if (dataArrived)
+            Expanded(
+                child: QAPost(
+              QAList: listaQA,
+              callback: (index) {
+                print(index);
+                setState(() {
+                  listaQA.removeAt(index);
+                });
+              },
+            ))
+          else
+            Container(
+              padding: const EdgeInsets.all(8),
+              child: const CircularProgressIndicator(),
+            )
         ],
       ),
     );
@@ -168,16 +180,8 @@ class QAPost extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount:
-          QAList.length * 2 - 1, // Ajustar la longitud para incluir Dividers
+      itemCount: QAList.length,
       itemBuilder: (context, index) {
-        if (index.isOdd) {
-          // Índices impares corresponden a Dividers
-          return const Divider();
-        }
-
-        final QAIndex = index ~/ 2; // Índice de QA (división entera por 2)
-
         return Padding(
           padding: const EdgeInsets.all(5),
           child: ListTile(
@@ -186,7 +190,7 @@ class QAPost extends StatelessWidget {
               splashColor: Colors.red,
               onPressed: () {
                 print('Eliminar pregunta');
-                callback(QAIndex);
+                callback(index);
               },
               icon: const Icon(Icons.remove_circle_outline_rounded),
             ),
@@ -201,7 +205,7 @@ class QAPost extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
                   child: Text(
-                    QAList[QAIndex].pregunta,
+                    QAList[index].pregunta,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20),
                   ),
@@ -209,7 +213,7 @@ class QAPost extends StatelessWidget {
             subtitle: Padding(
                 padding: const EdgeInsets.only(left: 5),
                 child: Text(
-                  QAList[QAIndex].respuesta,
+                  QAList[index].respuesta,
                   style: TextStyle(
                       color: Colors.black.withOpacity(0.8), fontSize: 16),
                 )),

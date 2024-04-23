@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import '../Entitys.dart';
 import '../Solicitudes.dart';
 
@@ -17,25 +16,25 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "228579452",
     "FirstSurname": "Aguilar",
     "ID": 59,
-    "Mail": "edgar@example.com",
+    "Mail": "edgar@alumnos.udg.mx",
     "Name": "Edgar",
     "SecondSurname": "Garcia",
     "TutorID": 1
   },
   {
     "Code": "228575452",
-    "FirstSurname": "Aguilar",
+    "FirstSurname": "Barajas",
     "ID": 60,
-    "Mail": "ulises@example.com",
+    "Mail": "ulises@alumnos.udg.mx",
     "Name": "Ulises",
-    "SecondSurname": "Garnacho",
+    "SecondSurname": "Zavala",
     "TutorID": 1
   },
   {
     "Code": "238574512",
     "FirstSurname": "Gomez",
     "ID": 61,
-    "Mail": "maria@example.com",
+    "Mail": "maria@alumnos.udg.mx",
     "Name": "Maria",
     "SecondSurname": "Lopez",
     "TutorID": 2
@@ -44,7 +43,7 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "248572634",
     "FirstSurname": "Perez",
     "ID": 62,
-    "Mail": "carlos@example.com",
+    "Mail": "carlos@alumnos.udg.mx",
     "Name": "Carlos",
     "SecondSurname": "Rodriguez",
     "TutorID": 2
@@ -53,16 +52,16 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "258573478",
     "FirstSurname": "Vargas",
     "ID": 63,
-    "Mail": "laura@example.com",
+    "Mail": "laura@alumnos.udg.mx",
     "Name": "Laura",
     "SecondSurname": "Hernandez",
-    "TutorID": 1
+    "TutorID": 3
   },
   {
     "Code": "268571233",
     "FirstSurname": "Torres",
     "ID": 64,
-    "Mail": "alberto@example.com",
+    "Mail": "alberto@alumnos.udg.mx",
     "Name": "Alberto",
     "SecondSurname": "Gomez",
     "TutorID": 2
@@ -71,25 +70,25 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "278574896",
     "FirstSurname": "Hernandez",
     "ID": 65,
-    "Mail": "diana@example.com",
+    "Mail": "diana@alumnos.udg.mx",
     "Name": "Diana",
     "SecondSurname": "Martinez",
-    "TutorID": 2
+    "TutorID": 1
   },
   {
     "Code": "288579010",
     "FirstSurname": "Mendoza",
     "ID": 66,
-    "Mail": "raul@example.com",
+    "Mail": "raul@alumnos.udg.mx",
     "Name": "Raul",
     "SecondSurname": "Santos",
-    "TutorID": 1
+    "TutorID": 3
   },
   {
     "Code": "298571934",
     "FirstSurname": "Sanchez",
     "ID": 67,
-    "Mail": "nancy@example.com",
+    "Mail": "nancy@alumnos.udg.mx",
     "Name": "Nancy",
     "SecondSurname": "Torres",
     "TutorID": 1
@@ -98,7 +97,7 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "308573567",
     "FirstSurname": "Gutierrez",
     "ID": 68,
-    "Mail": "juan@example.com",
+    "Mail": "juan@alumnos.udg.mx",
     "Name": "Juan",
     "SecondSurname": "Gomez",
     "TutorID": 2
@@ -107,7 +106,7 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "318572345",
     "FirstSurname": "Ramos",
     "ID": 69,
-    "Mail": "carmen@example.com",
+    "Mail": "carmen@alumnos.udg.mx",
     "Name": "Carmen",
     "SecondSurname": "Lopez",
     "TutorID": 1
@@ -116,16 +115,16 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "328578901",
     "FirstSurname": "Jimenez",
     "ID": 70,
-    "Mail": "roberto@example.com",
+    "Mail": "roberto@alumnos.udg.mx",
     "Name": "Roberto",
     "SecondSurname": "Perez",
-    "TutorID": 2
+    "TutorID": 3
   },
   {
     "Code": "338571234",
     "FirstSurname": "Fuentes",
     "ID": 71,
-    "Mail": "alicia@example.com",
+    "Mail": "alicia@alumnos.udg.mx",
     "Name": "Alicia",
     "SecondSurname": "Garcia",
   },
@@ -133,7 +132,7 @@ List<Map<String, dynamic>> estudiantesPrueba = [
     "Code": "348574567",
     "FirstSurname": "Vega",
     "ID": 72,
-    "Mail": "martin@example.com",
+    "Mail": "martin@alumnos.udg.mx",
     "Name": "Martin",
     "SecondSurname": "Hernandez",
   },
@@ -144,17 +143,33 @@ List<Map<String, dynamic>> tutoresPrueba = [
     "Code": "346709587",
     "FirstSurname": "García",
     "ID": 1,
-    "Mail": "juangarcia@academicos.udg.mx",
-    "Name": "Juan",
+    "Mail": "Mateogarcia@academicos.udg.mx",
+    "Name": "Mateo",
     "SecondSurname": "Pérez"
   },
   {
     "Code": "218576373",
     "FirstSurname": "Valencia",
     "ID": 2,
-    "Mail": "correo3@ejemplo.com",
+    "Mail": "carlosV@ejemplo.com",
     "Name": "Carlos",
     "SecondSurname": "Carlson"
+  },
+  {
+    "Code": "987654321",
+    "FirstSurname": "Martínez",
+    "ID": 3,
+    "Mail": "martinez@example.com",
+    "Name": "Ana",
+    "SecondSurname": "López"
+  },
+  {
+    "Code": "123456789",
+    "FirstSurname": "Gómez",
+    "ID": 4,
+    "Mail": "gomez@example.com",
+    "Name": "Luis",
+    "SecondSurname": "Rodríguez"
   },
 ];
 
@@ -166,42 +181,68 @@ class Assignment extends StatefulWidget {
 }
 
 class _AssignmentState extends State<Assignment> {
-  final List<Tutor> tutors = [];
-  final List<Student> assignless = [];
+  List<Tutor> tutors = [];
+  List<Student> assignless = [];
+  int tutorIndex = 0;
+  bool cargando = true;
+  Future<List<List<dynamic>>> fetchTutores() async {
+    List<List<dynamic>> result = [];
+
+    // Obtener tutores
+    final tutorData = await obtainThings("tutors");
+    if (tutorData[0].containsKey('Error')) {
+      print(tutorData[0]['Error']);
+    } else {
+      List<Tutor> tutores = [];
+      for (Map<String, dynamic> value in tutorData) {
+        tutores.add(Tutor.fromMap(value));
+      }
+      result.add(tutores);
+
+      // Obtener estudiantes y asignar a tutores
+      final studentData = await obtainThings("students");
+      print(studentData);
+      if (studentData[0].containsKey('Error')) {
+        print(studentData[0]['Error']);
+      } else {
+        List<Student> sintutor = [];
+        for (Map<String, dynamic> s in studentData) {
+          if (s.containsKey('Tutor')) {
+            int tutorIndex =
+                tutores.indexWhere((tutor) => tutor.id == s['Tutor']['ID']);
+            if (tutorIndex >= 0) {
+              tutores[tutorIndex].myStudents.add(Student.fromMap(s));
+            } else {
+              sintutor.add(Student.fromMap(s));
+            }
+          } else {
+            sintutor.add(Student.fromMap(s));
+          }
+        }
+        result.add(sintutor);
+      }
+    }
+
+    return result;
+  }
 
   @override
   void initState() {
-    /*obtainThings("tutors").then((values) {
-      if (values[0].containsKey('Error')) {
-        print(values[0]['Error']);
-      } else {*/
-    //Tratamiento de datos
-
-    for (Map<String, dynamic> value in tutoresPrueba) {
-      tutors.add(Tutor.fromMap(value));
-    }
-
-    /*obtainThings("students").then((stds) => {
-          if (stds[0].containsKey('Error'))
-            {print(stds[0]['Error'])}
-          else
-            {*/
-    for (Map<String, dynamic> s in estudiantesPrueba) {
-      if (s.containsKey('TutorID')) {
-        var tutorIndex = tutors.indexWhere((tutor) => tutor.id == s['TutorID']);
-        if (tutorIndex != -1) {
-          tutors[tutorIndex].myStudents.add(Student.fromMap(s));
-        } else {
-          assignless.add(Student.fromMap(s));
+    fetchTutores().then(
+      (value) {
+        if (value.isNotEmpty) {
+          print('Actualizando la data');
+          print(value[0]);
+          tutors = value[0].cast<Tutor>();
+          print(value[1]);
+          assignless = value[1].cast<Student>();
+          setState(() {
+            print('setstate');
+            cargando = false;
+          });
         }
-      } else {
-        assignless.add(Student.fromMap(s));
-      }
-    }
-    //    }
-    //  });
-    //}
-    //});
+      },
+    );
 
     super.initState();
   }
@@ -239,52 +280,55 @@ class _AssignmentState extends State<Assignment> {
               ),
             ),
           ),
-          Flexible(
-              //flex: 2,
-              fit: FlexFit.tight,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: tutors.length,
-                  itemBuilder: (context, index) {
-                    return DragTarget<Student>(
-                      builder: (context, List<Student?> candidateData,
-                          rejectedData) {
-                        return TutorDisplayer(
-                          index: index,
-                          tutor: tutors[index],
-                        );
-                      },
-                      onWillAccept: (data) {
-                        print('onWillAccept ejecutado');
-                        return true;
-                      },
-                      onAccept: (Student data) {
-                        print('se agrego un estudiante');
-                        print(data.name);
-                        print(index);
-                        setState(() {
-                          tutors[index].myStudents.add(data);
-                        });
+          if (cargando)
+            const Center(
+              child: Text('Cargando...'),
+            )
+          else
+            Flexible(
+                //flex: 2,
+                fit: FlexFit.tight,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemCount: tutors.length,
+                    itemBuilder: (context, index) {
+                      return DragTarget<Student>(
+                        builder: (context, List<Student?> candidateData,
+                            rejectedData) {
+                          return TutorDisplayer(
+                            index: index,
+                            tutor: tutors[index],
+                          );
+                        },
+                        onWillAccept: (data) {
+                          //print('onWillAccept ejecutado');
+                          return true;
+                        },
+                        onAccept: (Student data) {
+                          print('se agrego un estudiante');
+                          print(data.name);
+                          print(index);
 
-                        /*asignStudent(idst, tutors[index].id).then((value) => {
-                              if (value.contains('Error'))
-                                {print(value)}
-                              else
-                                {
-                                  setState(() {
-                                    //tutors[index].addStudent()
-                                  })
-                                }
-                            });*/
-                      },
-                    );
-                  },
-                ),
-              )),
+                          asignStudent(data.id, tutors[index].id)
+                              .then((value) => {
+                                    if (value.contains('Error'))
+                                      {print(value)}
+                                    else
+                                      {
+                                        setState(() {
+                                          tutors[index].myStudents.add(data);
+                                        })
+                                      }
+                                  });
+                        },
+                      );
+                    },
+                  ),
+                )),
           if (assignless.isNotEmpty)
             Flexible(
               //flex: 1,
@@ -465,8 +509,8 @@ class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
     String apellidoPaterno = apellidoPaternoController.text;
     String apellidoMaterno = apellidoMaternoController.text;
     String correo = correoController.text;
-    String codigo = codigoController.text;
-    String contrasena = contrasenaController.text;
+    //String codigo = codigoController.text;
+    //String contrasena = contrasenaController.text;
 
     // Hacer la llamada para el registro
 
