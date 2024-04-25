@@ -65,7 +65,7 @@ class _CitasActivasState extends State<CitasActivas> {
       if (citaData[0].containsKey('Error')) {
         print(citaData[0]['Error']);
       } else {
-        print(citaData);
+        //print(citaData);
         result = Appointment.fromMapList(citaData);
       }
     }
@@ -80,7 +80,7 @@ class _CitasActivasState extends State<CitasActivas> {
     fetchCitas().then((value) => {
           if (value.isNotEmpty) {appointments = value},
           setState(() {
-            print('setstate');
+            //print('setstate');
             cargando = false;
           })
         });
@@ -196,18 +196,27 @@ class _AppointmentTileState extends State<AppointmentTile> {
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Status: ${widget.appointment.status}'),
+                Text(
+                  widget.appointment.status,
+                  style: const TextStyle(fontStyle: FontStyle.italic),
+                ),
               ],
             ),
             leading: Container(
-              padding: EdgeInsets.all(8),
+              padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: _getStatusColor(),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
               ),
-              child: Text(
-                widget.appointment.id.toString(),
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              child: Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  widget.appointment.id.toString(),
+                  style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black),
+                ),
               ),
             ),
             trailing: IconButton(
@@ -216,61 +225,135 @@ class _AppointmentTileState extends State<AppointmentTile> {
             ),
           ),
           if (expanded) ...[
-            Divider(),
+            const Divider(),
             Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Table(
+                  columnWidths: const {
+                    0: FlexColumnWidth(2), // Ancho de la primera columna
+                    1: FlexColumnWidth(3), // Ancho de la segunda columna
+                    2: FlexColumnWidth(3), // Ancho de la tercera columna
+                  },
                   children: [
-                    const Text(
-                      'Estudiante:',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    const TableRow(
+                      children: [
+                        TableCell(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('Nombre',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('Correo',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(widget.appointment.sName),
-                    Text(widget.appointment.sMail),
+                    TableRow(
+                      children: [
+                        const TableCell(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('Tutor',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(widget.appointment.tName),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(widget.appointment.tMail),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        const TableCell(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('Estudiante',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(widget.appointment.sName),
+                          ),
+                        ),
+                        TableCell(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(widget.appointment.sMail),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      const Text(
-                        'Tutor:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                      Text(widget.appointment.tName),
-                      Text(widget.appointment.tMail),
-                    ]),
-                Divider(),
-                Text('Categoria: ${widget.appointment.category}',
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    'Categoría: ${widget.appointment.category}',
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w500)),
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Motivo:',
+                        'Motivo: ',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w500),
                       ),
+                      const SizedBox(width: 5),
                       Text(widget.appointment.reason),
-                    ]),
+                    ],
+                  ),
+                ),
                 if (widget.appointment.status == "Aceptada")
                   Column(
                     children: [
-                      Divider(),
+                      const Divider(),
                       Text('Actualizado en: $uAt'),
                       Text('Dia: $d'),
                       Text('Hora: $h'),
                       Text('Lugar: ${widget.appointment.place}'),
+                      const SizedBox(height: 4)
                     ],
                   ),
                 if (widget.appointment.status == "Cancelada")
                   Column(
                     children: [
-                      Divider(),
+                      const Divider(),
                       Text('Cancelado en: $uAt'),
+                      const SizedBox(height: 4)
                     ],
                   ),
               ],
@@ -411,14 +494,14 @@ class _HistoricoState extends State<Historico> {
       (value) => {
         if (value[0].containsKey('Error'))
           {
-            print(value[0]['Error']),
+            print(value[0]),
             categorias = [
               "Todos",
               "Articulo 34",
               "Art. 35",
               "Tutorados",
               "Agenda de materias",
-              "Titulaciones",
+              "Titulaciones"
             ]
           }
         else
@@ -531,9 +614,31 @@ class _HistoricoState extends State<Historico> {
                   )
               ],
             )),
-        if (cargando) const Center(child: Text('sestacargando caon')),
+        if (cargando)
+          const Padding(
+            padding: EdgeInsets.all(45.0),
+            child: Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 4, // Ancho de la línea de progreso
+                backgroundColor: Colors.grey, // Color de fondo del círculo
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.blue), // Color de la línea de progreso
+              ),
+            ),
+          ),
         if (!cargando && appointments.isEmpty)
-          const Center(child: Text('No hubo citas wei')),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(18.0),
+              child: Text(
+                'No hay citas',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
         if (!cargando && appointments.isNotEmpty)
           Expanded(
               child: Padding(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
 import 'package:tutoapp_admin/Solicitudes.dart';
-import 'package:tutoapp_admin/providers/UserProvider.dart';
+//import 'package:tutoapp_admin/providers/UserProvider.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});

@@ -7,6 +7,7 @@ import 'Settings.dart';
 import 'Reports.dart';
 import 'Assignment.dart';
 import 'Sugerencias.dart';
+import 'Categorias.dart';
 
 class CentralApp extends StatefulWidget {
   const CentralApp({super.key});
@@ -24,7 +25,8 @@ class _CentralAppState extends State<CentralApp> {
     const Reports(), // REPORTES
     const Notifications(),
     const Settings(),
-    const Sugerencias()
+    const Sugerencias(),
+    CategoriasAD()
   ];
 
   var index = 0;
@@ -107,6 +109,15 @@ class _CentralAppState extends State<CentralApp> {
                         index = 3;
                       });
                     }
+                  },
+                ),
+                MenuOp(
+                  icon: Icons.category_outlined,
+                  text: 'Categorias',
+                  onTap: () {
+                    setState(() {
+                      index = 8;
+                    });
                   },
                 ),
                 MenuOp(

@@ -111,6 +111,82 @@ Future<String> createThings(Map<String, dynamic> datos, String term) async {
   }
 }
 
+Future<Map<String, dynamic>> createThings2(
+    Map<String, dynamic> datos, String term) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
+  // Obtén el token desde Flutter Secure Storage
+  final String? token = await secureStorage.read(key: 'access_token');
+
+  if (token == null) {
+    return {'Error': 'Token nulo'};
+  }
+  final url = Uri.parse('https://tutoapp.onrender.com/admin/$term');
+  // Datos del estudiante
+
+  try {
+    final respuesta = await http.post(
+      url,
+      headers: {'Auth': token},
+      body: jsonEncode(datos),
+    );
+
+    if (respuesta.statusCode == 200) {
+      Map<String, dynamic> datosRespuesta = jsonDecode(respuesta.body);
+
+      return datosRespuesta;
+    } else {
+      // Manejar errores
+      return {
+        'Error': 'Error en la solicitud HTTP',
+        'statusCode': respuesta.statusCode
+      };
+    }
+  } catch (error) {
+    // Manejar errores de red o cualquier otra excepción
+    print('Error: $error');
+    return {'Error': 'Error de red o excepción', 'exception': error.toString()};
+  }
+}
+
+Future<Map<String, dynamic>> modifyThings(
+    Map<String, dynamic> datos, String term, String id) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
+  // Obtén el token desde Flutter Secure Storage
+  final String? token = await secureStorage.read(key: 'access_token');
+
+  if (token == null) {
+    return {'Error': 'Token nulo'};
+  }
+  final url = Uri.parse('https://tutoapp.onrender.com/admin/$term/$id');
+  // Datos del estudiante
+
+  try {
+    final respuesta = await http.put(
+      url,
+      headers: {'Auth': token},
+      body: jsonEncode(datos),
+    );
+
+    if (respuesta.statusCode == 200) {
+      Map<String, dynamic> datosRespuesta = jsonDecode(respuesta.body);
+
+      return datosRespuesta;
+    } else {
+      print('Error ${respuesta.statusCode}');
+      return {
+        'Error': 'Error en la solicitud HTTP',
+        'statusCode': respuesta.statusCode
+      };
+    }
+  } catch (error) {
+    // Manejar errores de red o cualquier otra excepción
+    print('Error: $error');
+    return {'Error': 'Error de red o excepción', 'exception': error.toString()};
+  }
+}
+
 Future<String> eliminateThings(int id, String term) async {
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -198,8 +274,10 @@ Future<List<Map<String, dynamic>>> obtainHistoric(
     ];
   }
 
-  String start = customFormatDateTime(inicial);
-  String end = customFormatDateTime(terminal);
+  String start =
+      '${inicial.year}-${_twoDigits(inicial.month)}-${_twoDigits(inicial.day)}';
+  String end =
+      '${terminal.year}-${_twoDigits(terminal.month)}-${_twoDigits(terminal.day)}';
   if (category == 'Todos') {
     category = '';
   }
@@ -212,12 +290,20 @@ Future<List<Map<String, dynamic>>> obtainHistoric(
     final respuesta = await http.get(url, headers: {'Auth': token});
 
     if (respuesta.statusCode == 200) {
-      // Procesar la respuesta si es necesario
-      List<dynamic> data = jsonDecode(respuesta.body);
+      Map<String, dynamic> data = jsonDecode(respuesta.body);
+
+      // Extraer la lista de 'place_counts'
+      List<dynamic> appCounts = data['appointment_history'];
+
+      if (appCounts.isEmpty) {
+        return [
+          {'Error': 'No hay datos, trata con otra fecha'}
+        ];
+      }
 
       // Convertir la lista de dynamic a una lista de Map<String, dynamic>
       List<Map<String, dynamic>> dataConversion =
-          List<Map<String, dynamic>>.from(data);
+          List<Map<String, dynamic>>.from(appCounts);
       //print('Los datos si llegaron');
       return dataConversion;
     } else {

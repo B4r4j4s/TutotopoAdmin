@@ -83,6 +83,22 @@ class Appointment {
   });
 
   factory Appointment.fromMap(Map<String, dynamic> map) {
+    /*if (map["CreatedAt"] == null) {
+      map["CreatedAt"] = DateTime.now();
+    }
+    if (map["UpdatedAt"] == null) {
+      map["UpdatedAt"] = DateTime.now();
+    }if (map["DeletedAt"] == null) {
+      map["DeletedAt"] = DateTime.now();
+    }*/
+    String c = "Category";
+    if (map["Place"] == null) {
+      map["Place"] = 'Nulo';
+    }
+    if (map[c] == null) {
+      c = "CategoryType";
+    }
+
     return Appointment(
       id: map["ID"],
       createdAt: DateTime.parse(map["CreatedAt"]),
@@ -108,7 +124,7 @@ class Appointment {
           ? DateTime.parse(map["AppointmentDateTime"])
           : null,
       place: map["Place"],
-      category: map["Category"],
+      category: map[c],
       status: map["Status"],
     );
   }
