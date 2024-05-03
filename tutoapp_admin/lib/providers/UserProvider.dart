@@ -14,6 +14,15 @@ class User {
   String fullName() {
     return '$name $lastnameA $lastnameB';
   }
+
+  void clear() {
+    ID = '';
+    code = '';
+    name = '';
+    lastnameA = '';
+    lastnameA = '';
+    mail = '';
+  }
 }
 
 class UserProvider with ChangeNotifier {
@@ -52,5 +61,9 @@ class UserProvider with ChangeNotifier {
     //});
     print(_user);
     return true;
+  }
+
+  void deleteData() {
+    _user.clear();
   }
 }

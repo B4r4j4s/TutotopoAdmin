@@ -31,6 +31,14 @@ class _ProfileState extends State<Profile> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    pass.dispose();
+    passC.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
@@ -47,28 +55,89 @@ class _ProfileState extends State<Profile> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-              alignment: Alignment.topLeft,
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
-              child: const Icon(Icons.account_circle_rounded, size: 220)),
-          Row(mainAxisSize: MainAxisSize.max, children: [
-            const LabelBox(text: 'Nombre:'),
-            const SizedBox(width: 10),
-            Expanded(child: DataBox(text: name))
-          ]),
+            alignment: Alignment.topLeft,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+            decoration: BoxDecoration(
+              color: Colors.white, // Color de fondo
+              borderRadius: BorderRadius.circular(10), // Bordes redondeados
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5), // Color de la sombra
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3), // Desplazamiento de la sombra
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.account_circle_rounded, size: 220),
+                const SizedBox(width: 20),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('ADMIN INFO',
+                        style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepOrange[800])),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const LabelBox(text: 'Nombre:'),
+                        const SizedBox(width: 10),
+                        Text(name), // Muestra el nombre directamente
+                      ],
+                    ),
+                    const SizedBox(
+                        height: 20), // Ajusta el espacio entre las filas
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        const LabelBox(text: '  Correo:'),
+                        const SizedBox(width: 10),
+                        Text(mail), // Muestra el correo directamente
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 20),
-          Row(mainAxisSize: MainAxisSize.max, children: [
-            const LabelBox(text: ' Correo:'),
-            const SizedBox(width: 10),
-            Expanded(child: DataBox(text: mail))
-          ]),
-          const SizedBox(height: 40),
-          ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  showForm = !showForm;
-                });
-              },
-              child: const Text('Cambiar contraseña')),
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() {
+                showForm = !showForm;
+              });
+            },
+            icon: Icon(
+              showForm
+                  ? Icons.keyboard_arrow_up_rounded
+                  : Icons.keyboard_arrow_down_rounded,
+              // Color del icono dependiendo del estado
+              color: showForm ? Colors.grey : Colors.black,
+            ),
+            label: Text(
+              showForm ? 'Cancelar' : 'Cambiar contraseña',
+              // Color del texto dependiendo del estado
+              style: TextStyle(color: showForm ? Colors.grey : Colors.black),
+            ),
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+              ),
+              shape: MaterialStateProperty.all<OutlinedBorder>(
+                RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              foregroundColor: MaterialStateProperty.all<Color>(
+                Colors.white,
+              ),
+            ),
+          ),
           const SizedBox(height: 30),
           if (showForm)
             Container(

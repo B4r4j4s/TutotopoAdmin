@@ -60,19 +60,29 @@ class _QAState extends State<QA> {
   void initState() {
     q = TextEditingController();
     a = TextEditingController();
+
     obtainThings(term).then((values) {
-      if (values[0].containsKey('Error')) {
-        print(values[0]['Error']);
-      } else {
-        for (Map<String, dynamic> value in values) {
-          questions.add(insertQAs(value));
+      if (values.isNotEmpty) {
+        if (!values[0].containsKey('Error')) {
+          for (Map<String, dynamic> value in values) {
+            questions.add(insertQAs(value));
+          }
         }
       }
+      setState(() {
+        dataArrived = true;
+      });
     });
-    setState(() {
-      dataArrived = true;
-    });
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    q.dispose();
+    a.dispose();
+    super.dispose();
   }
 
   @override
@@ -83,89 +93,112 @@ class _QAState extends State<QA> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Card(
-            child: ListTile(
-                //contentPadding: EdgeInsets.all(40),
-                title: const Text('Agrega una pregunta'),
-                subtitle: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: q,
-                          decoration: const InputDecoration(
-                              //labelText: 'Titulo',
-                              hintText: 'Pregunta'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Una respuesta necesita un pregunta.';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          controller: a,
-                          minLines: 1,
-                          maxLines: 3,
-                          decoration: const InputDecoration(
-                              //labelText: 'Contenido',
-                              //border: OutlineInputBorder(),
-                              hintText: 'Respuesta'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Una pregunta necesita una respuesta.';
-                            }
-                            return null;
-                          },
-                        ),
-                        Container(
-                          alignment: Alignment.bottomRight,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                print('Agregando');
-                                Map<String, dynamic> data = {
-                                  "Question": q.text,
-                                  "Answer": a.text
-                                };
-                                createThings(data, term).then((value) {
-                                  if (value.contains('Error')) {
-                                    //print(value);
-                                  } else {}
-                                });
-                                setState(() {
-                                  questions.add(QAs(q.text, a.text));
-                                });
-                              }
-                            },
-                            child: const Text('Agregar'),
-                          ),
-                        )
-                      ],
-                    ))),
+            child: Form(
+                key: _formKey,
+                child: ListTile(
+                  //contentPadding: EdgeInsets.all(40),
+                  title: const Text(
+                    'Agrega una pregunta frecuente',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                  ),
+                  subtitle: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: q,
+                        decoration: const InputDecoration(
+                            //labelText: 'Titulo',
+                            hintText: 'Pregunta'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Una respuesta necesita un pregunta.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: a,
+                        minLines: 1,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                            //labelText: 'Contenido',
+                            //border: OutlineInputBorder(),
+                            hintText: 'Respuesta'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Una pregunta necesita una respuesta.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.add),
+                    iconSize: 36, // Tamaño del ícono
+                    color: Colors.deepOrange[900], // Color del ícono
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Map<String, dynamic> data = {
+                          "Question": q.text,
+                          "Answer": a.text
+                        };
+                        createThings(data, term).then((value) {
+                          if (!value.contains('Error')) {
+                            setState(() {
+                              questions.add(QAs(q.text, a.text));
+                              q.text = '';
+                              a.text = '';
+                            });
+                          }
+                        });
+                      }
+                    },
+                  ),
+                )),
           ),
           /*const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Divider(thickness: 4),
           ),*/
           if (dataArrived)
-            Expanded(
-                child: QAPost(
-              QAList: listaQA,
-              callback: (index) {
-                print(index);
-                setState(() {
-                  listaQA.removeAt(index);
-                });
-              },
-            ))
+            if (questions.isNotEmpty)
+              Expanded(
+                  child: QAPost(
+                QAList: questions,
+                callback: (index) {
+                  setState(() {
+                    showConfirmationDialog(context).then(
+                      (value) {
+                        if (value != null && value) {
+                          eliminateThings(questions[index].id, term);
+                          setState(() {
+                            questions.removeAt(index);
+                          });
+                        }
+                      },
+                    );
+                  });
+                },
+              ))
+            else
+              const Expanded(
+                  child: Center(
+                      child: Text(
+                'No hay preguntas para mostrar',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              )))
           else
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const CircularProgressIndicator(),
+            const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             )
         ],
       ),
@@ -189,10 +222,10 @@ class QAPost extends StatelessWidget {
               hoverColor: Colors.red.shade300,
               splashColor: Colors.red,
               onPressed: () {
-                print('Eliminar pregunta');
+                //print('Eliminar pregunta');
                 callback(index);
               },
-              icon: const Icon(Icons.remove_circle_outline_rounded),
+              icon: const Icon(Icons.delete_forever),
             ),
             title: Container(
                 decoration: BoxDecoration(
@@ -223,4 +256,30 @@ class QAPost extends StatelessWidget {
       },
     );
   }
+}
+
+Future<bool?> showConfirmationDialog(BuildContext context) async {
+  return await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmación'),
+        content: const Text('¿Seguro que quieres borrar esta pregunta?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Confirma la acción
+            },
+            child: const Text('Sí'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Cancela la acción
+            },
+            child: const Text('No'),
+          ),
+        ],
+      );
+    },
+  );
 }

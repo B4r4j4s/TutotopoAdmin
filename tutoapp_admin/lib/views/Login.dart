@@ -6,7 +6,7 @@ import 'package:tutoapp_admin/providers/UserProvider.dart';
 import 'AppBarNavegador.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  const Login({Key? key}) : super(key: key);
 
   @override
   State<Login> createState() => _LoginState();
@@ -24,7 +24,11 @@ class _LoginState extends State<Login> {
           if (response.contains('Error'))
             {
               if (response.contains('401'))
-                {print('Contraseña Incorrecta')}
+                {
+                  setState(() {
+                    errorMessage = 'Contraseña incorrecta';
+                  })
+                }
               else
                 {print(response)}
             }
@@ -34,69 +38,69 @@ class _LoginState extends State<Login> {
                   context, response, Colors.green, const Duration(seconds: 2)),
               //context.watch<UserProvider>().setMail(mail),
               getAdminInfo(context).then((value) {
-                if (value.containsKey('Error')) {
-                  print(value['Error']);
-                } else {
+                if (!value.containsKey('Error')) {
                   context.read<UserProvider>().insertData(value);
+                  Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                          transitionDuration: const Duration(milliseconds: 100),
+                          pageBuilder: (_, __, ___) => const CentralApp(),
+                          transitionsBuilder: (_, animation, __, child) {
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
+
+                            var tween = Tween(begin: begin, end: end)
+                                .chain(CurveTween(curve: curve));
+
+                            var offsetAnimation = animation.drive(tween);
+
+                            return SlideTransition(
+                                position: offsetAnimation, child: child);
+                          }));
                 }
-              }),
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: const Duration(milliseconds: 100),
-                  pageBuilder: (_, __, ___) => const CentralApp(),
-                  transitionsBuilder: (_, animation, __, child) {
-                    const begin = Offset(1.0, 0.0);
-                    const end = Offset.zero;
-                    const curve = Curves.easeInOut;
-
-                    var tween = Tween(begin: begin, end: end)
-                        .chain(CurveTween(curve: curve));
-
-                    var offsetAnimation = animation.drive(tween);
-
-                    return SlideTransition(
-                        position: offsetAnimation, child: child);
-                  },
-                ),
-              ),
+              })
             }
         });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      body: Center(
-        child: FractionallySizedBox(
-          widthFactor:
-              0.8, // Set the fraction of the screen width (adjust as needed)
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 250),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                //img
-                const Text(
-                  'Topografia',
-                  style: TextStyle(
-                    fontSize: 60,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minWidth: 800,
+        minHeight: 800,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.blueGrey[100],
+        body: Center(
+          child: FractionallySizedBox(
+            widthFactor: 0.8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 50),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Topografía',
+                    style: TextStyle(
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 40),
-                Form(
+                  const SizedBox(height: 20),
+                  Form(
                     key: _formKey,
                     child: Column(
                       children: [
                         TextFormField(
                           controller: mail,
                           decoration: const InputDecoration(
-                              labelText: 'Correo',
-                              prefixIcon: Icon(Icons.person),
-                              border: OutlineInputBorder(),
-                              hintText: 'Ingresa tu correo'),
+                            labelText: 'Correo',
+                            prefixIcon: Icon(Icons.person),
+                            border: OutlineInputBorder(),
+                          ),
                           validator: (String? value) {
                             if (value == null || value.isEmpty) {
                               return 'Tienes que llenar este campo';
@@ -109,19 +113,19 @@ class _LoginState extends State<Login> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 10),
                         TextFormField(
                           controller: pass,
                           decoration: InputDecoration(
                             labelText: 'Contraseña',
                             prefixIcon: const Icon(Icons.lock),
                             border: const OutlineInputBorder(),
-                            hintText: 'Ingresa tu contraseña unica',
                             suffixIcon: IconButton(
                               icon: Icon(
                                 _isPasswordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
+                                color: Colors.grey,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -130,10 +134,10 @@ class _LoginState extends State<Login> {
                               },
                             ),
                           ),
-                          obscureText: _isPasswordVisible,
-                          validator: (String? value) {
+                          obscureText: !_isPasswordVisible,
+                          validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Tienes que llenar este campo';
+                              return 'Por favor ingresa tu contraseña';
                             }
                             return null;
                           },
@@ -141,55 +145,69 @@ class _LoginState extends State<Login> {
                         const SizedBox(height: 10),
                         Text(
                           errorMessage,
-                          style:
-                              const TextStyle(fontSize: 18, color: Colors.red),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.red,
+                          ),
                         ),
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               logearse(mail.text, pass.text, context);
                             }
                           },
-                          style: ButtonStyle(
-                            padding:
-                                MaterialStateProperty.all<EdgeInsetsGeometry>(
-                              const EdgeInsets.symmetric(
-                                  vertical: 15, horizontal: 20),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 15,
+                              horizontal: 20,
                             ),
-                            shape: MaterialStateProperty.all<OutlinedBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
+                            backgroundColor: Colors.orange[800],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
                             ),
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.orange[800]!),
-                            foregroundColor:
-                                MaterialStateProperty.all<Color>(Colors.white),
                           ),
                           child: const Text(
-                            'Logearse',
-                            style: TextStyle(fontSize: 20),
+                            'Iniciar Sesión',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
+                        const SizedBox(height: 10),
                         GestureDetector(
-                            onTap: () {
-                              print('Pressed');
-                            },
-                            child: const Text(
-                              'Olvidaste tu contraseña?',
-                              textAlign: TextAlign.start,
-                            ))
+                          onTap: () {
+                            print('Olvide mi contraseña');
+                          },
+                          child: const Text(
+                            '¿Olvidaste tu contraseña?',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                       ],
-                    )),
-                // GestureDetector at the bottom
-                GestureDetector(
-                  onTap: () {
-                    // Handle tap action
-                  },
-                  child: const Text('Terminos y condiciones'),
-                ),
-              ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      // Handle tap action
+                    },
+                    child: const Text(
+                      'Términos y condiciones',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

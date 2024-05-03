@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../Solicitudes.dart';
 
 final List<Aviso> anunciosPruebas = [
@@ -58,19 +59,28 @@ class _HomeState extends State<Home> {
     title = TextEditingController();
     content = TextEditingController();
     obtainThings("announcements").then((values) {
-      if (values[0].containsKey('Error')) {
-        print(values[0]['Error']);
-      } else {
-        for (Map<String, dynamic> value in values) {
-          anuncios.add(insertAviso(value));
+      if (values.isNotEmpty) {
+        if (!values[0].containsKey('Error')) {
+          for (Map<String, dynamic> value in values) {
+            anuncios.add(insertAviso(value));
+          }
         }
-        setState(() {
-          dataArrived = true;
-        });
       }
+
+      setState(() {
+        dataArrived = true;
+      });
     });
 
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    title.dispose();
+    content.dispose();
+    super.dispose();
   }
 
   @override
@@ -81,99 +91,119 @@ class _HomeState extends State<Home> {
         mainAxisSize: MainAxisSize.max,
         children: [
           Card(
-            child: ListTile(
+            color: Colors.grey[200], // Cambia el color de fondo a uno más claro
+            child: Form(
+              key: _formKey,
+              child: ListTile(
                 contentPadding: const EdgeInsets.all(40),
-                title: const Text('Agregar un mensaje'),
-                subtitle: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          decoration: const InputDecoration(
-                            labelText: 'Titulo',
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'El anuncio necesita un titulo.';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-                        TextFormField(
-                          minLines: 1,
-                          maxLines: 10,
-                          decoration: const InputDecoration(
-                              //labelText: 'Contenido',
-                              border: OutlineInputBorder(),
-                              hintText: 'Contenido'),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'El anuncio necesita contenido.';
-                            }
-                            return null;
-                          },
-                        ),
-                        Container(
-                          alignment: Alignment.bottomRight,
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                Map<String, dynamic> data = {
-                                  "Title": title.text,
-                                  "Content": content.text
-                                };
-                                createThings(data, "announcements")
-                                    .then((value) {
-                                  if (value.contains('Error')) {
-                                    print(value);
-                                  } else {
-                                    setState(() {
-                                      anuncios.add(Aviso(
-                                          title.text, 'Juanito', content.text));
-                                    });
-                                  }
-                                });
-                              }
-                            },
-                            child: const Text('Agregar aviso'),
-                          ),
-                        )
-                      ],
-                    ))),
+                title: const Text(
+                  'Agregar un mensaje',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                ),
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: title,
+                      decoration: const InputDecoration(
+                        labelText: 'Titulo',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'El anuncio necesita un titulo.';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: content,
+                      minLines: 1,
+                      maxLines: 10,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Contenido',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'El anuncio necesita contenido.';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.add),
+                  iconSize: 36, // Tamaño del ícono
+                  color: Colors.deepOrange[900], // Color del ícono
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      Map<String, dynamic> data = {
+                        "Title": title.text,
+                        "Content": content.text
+                      };
+                      createThings(data, "announcements").then((value) {
+                        if (!value.contains('Error')) {
+                          setState(() {
+                            anuncios.add(
+                                Aviso(title.text, 'Coordinador', content.text));
+                            title.text = '';
+                            content.text = '';
+                          });
+                        }
+                      });
+                    }
+                  },
+                ),
+              ),
+            ),
           ),
           /*const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Divider(thickness: 4),
           ),*/
           if (dataArrived)
-            Expanded(
-                child: ListView.builder(
-              itemCount: anunciosPruebas.length,
-              padding: const EdgeInsets.all(20), // Ajustar la longitud
-              itemBuilder: (context, index) {
-                return AnuncioCard(
-                  aviso: anunciosPruebas[index],
-                  callback: (id) {
-                    eliminateThings(id, 'announcements').then(
-                      (value) {
-                        //print(value);
-                        setState(() {
-                          anuncios.removeAt(index);
-                        });
-                      },
-                    );
-                  },
-                );
-              },
-            ))
+            if (anuncios.isNotEmpty)
+              Expanded(
+                  child: ListView.builder(
+                itemCount: anuncios.length,
+                padding: const EdgeInsets.all(20), // Ajustar la longitud
+                itemBuilder: (context, index) {
+                  return AnuncioCard(
+                    aviso: anuncios[index],
+                    callback: (id) {
+                      showConfirmationDialog(context).then(
+                        (value) {
+                          if (value != null && value) {
+                            eliminateThings(id, 'announcements');
+                            setState(() {
+                              anuncios.removeAt(index);
+                            });
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              ))
+            else
+              const Expanded(
+                  child: Center(
+                      child: Text(
+                'No hay anuncios para mostrar',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              )))
           else
-            Container(
-              padding: const EdgeInsets.all(8),
-              child: const CircularProgressIndicator(),
+            const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
             )
         ],
       ),
@@ -221,17 +251,41 @@ class AnuncioCard extends StatelessWidget {
                         fontStyle: FontStyle.italic),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      callback(aviso.id);
-                    },
-                    child: const Text('Eliminar'),
-                  ),
-                )
               ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete_forever),
+              iconSize: 36, // Tamaño del ícono
+              color: Colors.orange[900], // Color del ícono
+              onPressed: () {
+                callback(aviso.id);
+              },
             )));
   }
+}
+
+Future<bool?> showConfirmationDialog(BuildContext context) async {
+  return await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmación'),
+        content: const Text('¿Seguro que quieres borrar este anuncio?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(true); // Confirma la acción
+            },
+            child: const Text('Sí'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(false); // Cancela la acción
+            },
+            child: const Text('No'),
+          ),
+        ],
+      );
+    },
+  );
 }

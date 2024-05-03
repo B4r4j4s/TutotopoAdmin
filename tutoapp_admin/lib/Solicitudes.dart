@@ -96,13 +96,12 @@ Future<String> createThings(Map<String, dynamic> datos, String term) async {
       body: jsonEncode(datos),
     );
 
-    if (respuesta.statusCode == 200) {
-      Map<String, dynamic> datosRespuesta = jsonDecode(respuesta.body);
-
-      return datosRespuesta["message"];
+    if (respuesta.statusCode == 200 || respuesta.statusCode == 201) {
+      return 'se hizo';
     } else {
       // Manejar errores
-      return 'Error en la solicitud HTTP: ${respuesta.statusCode}';
+      print('Error ${respuesta.statusCode} | ${respuesta.body}');
+      return 'Error HTTP: ${respuesta.statusCode}';
     }
   } catch (error) {
     // Manejar errores de red o cualquier otra excepción
@@ -174,7 +173,7 @@ Future<Map<String, dynamic>> modifyThings(
 
       return datosRespuesta;
     } else {
-      print('Error ${respuesta.statusCode}');
+      print('Error ${respuesta.statusCode} | ${respuesta.body}');
       return {
         'Error': 'Error en la solicitud HTTP',
         'statusCode': respuesta.statusCode
@@ -236,6 +235,9 @@ Future<List<Map<String, dynamic>>> obtainThings(String term) async {
 
     if (respuesta.statusCode == 200) {
       // Procesar la respuesta si es necesario
+      if (respuesta.body.isEmpty) {
+        return [];
+      }
       List<dynamic> data = jsonDecode(respuesta.body);
 
       // Convertir la lista de dynamic a una lista de Map<String, dynamic>
@@ -245,7 +247,7 @@ Future<List<Map<String, dynamic>>> obtainThings(String term) async {
       return dataConversion;
     } else {
       // Manejar errores
-      print('Error en la solicitud HTTP: ${respuesta.statusCode}');
+      print('Error-HTTP: ${respuesta.statusCode} ${respuesta.body}');
       return [
         {
           'Error': 'Error en la solicitud HTTP',
@@ -291,7 +293,9 @@ Future<List<Map<String, dynamic>>> obtainHistoric(
 
     if (respuesta.statusCode == 200) {
       Map<String, dynamic> data = jsonDecode(respuesta.body);
-
+      if (data['appointment_history'] == null) {
+        return [];
+      }
       // Extraer la lista de 'place_counts'
       List<dynamic> appCounts = data['appointment_history'];
 

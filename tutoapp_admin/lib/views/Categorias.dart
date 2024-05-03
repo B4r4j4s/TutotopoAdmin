@@ -58,9 +58,9 @@ class _CategoriasADState extends State<CategoriasAD> {
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.orange
-                          .withOpacity(0.15), // Color naranja con blur
+                      color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
@@ -85,7 +85,7 @@ class _CategoriasADState extends State<CategoriasAD> {
                             hintStyle: TextStyle(color: Colors.grey),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.orange),
+                              borderSide: BorderSide(color: Colors.black87),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Colors.black54),
@@ -94,8 +94,7 @@ class _CategoriasADState extends State<CategoriasAD> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: () {},
-                          onLongPress: () {
+                          onPressed: () {
                             if (!(cat.text == '') || cat.text.isNotEmpty) {
                               var newC = {"CategoryType": cat.text};
                               createThings2(newC, 'categories')

@@ -190,9 +190,7 @@ class _AssignmentState extends State<Assignment> {
 
     // Obtener tutores
     final tutorData = await obtainThings("tutors");
-    if (tutorData[0].containsKey('Error')) {
-      print(tutorData[0]['Error']);
-    } else {
+    if (!tutorData[0].containsKey('Error')) {
       List<Tutor> tutores = [];
       for (Map<String, dynamic> value in tutorData) {
         tutores.add(Tutor.fromMap(value));
@@ -201,10 +199,8 @@ class _AssignmentState extends State<Assignment> {
 
       // Obtener estudiantes y asignar a tutores
       final studentData = await obtainThings("students");
-      print(studentData);
-      if (studentData[0].containsKey('Error')) {
-        print(studentData[0]['Error']);
-      } else {
+      //print(studentData);
+      if (!studentData[0].containsKey('Error')) {
         List<Student> sintutor = [];
         for (Map<String, dynamic> s in studentData) {
           if (s.containsKey('Tutor')) {
@@ -231,13 +227,13 @@ class _AssignmentState extends State<Assignment> {
     fetchTutores().then(
       (value) {
         if (value.isNotEmpty) {
-          print('Actualizando la data');
-          print(value[0]);
+          //print('Actualizando la data');
+          //print(value[0]);
           tutors = value[0].cast<Tutor>();
-          print(value[1]);
+          //print(value[1]);
           assignless = value[1].cast<Student>();
           setState(() {
-            print('setstate');
+            //print('setstate');
             cargando = false;
           });
         }
@@ -249,111 +245,132 @@ class _AssignmentState extends State<Assignment> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Padding(
-            // Titulo
-            padding: const EdgeInsets.all(15),
-            child: ListTile(
-              title: const Text(
-                'Asignacion',
-                style: TextStyle(fontSize: 30),
-              ),
-              trailing: IconButton(
-                padding: const EdgeInsets.all(10),
-                icon: const Icon(Icons.person_add_alt, size: 25),
-                onPressed: () async {
-                  Tutor? newTutor = await showDialog<Tutor>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return RegistrarProfesorDialog();
-                    },
-                  );
-                  if (newTutor != null) {
-                    setState(() {
-                      tutors.add(newTutor);
-                    });
-                  }
-                  //mostrarDialogoRegistrarProfesor(context);
-                },
-              ),
+    return Column(
+      children: [
+        Padding(
+          // Titulo
+          padding: const EdgeInsets.all(15),
+          child: ListTile(
+            title: const Text(
+              'Asignacion',
+              style: TextStyle(fontSize: 30),
+            ),
+            trailing: IconButton(
+              padding: const EdgeInsets.all(10),
+              icon: const Icon(Icons.person_add_alt, size: 25),
+              onPressed: () async {
+                Tutor? newTutor = await showDialog<Tutor>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return RegistrarProfesorDialog();
+                  },
+                );
+                if (newTutor != null) {
+                  setState(() {
+                    tutors.add(newTutor);
+                  });
+                }
+                //mostrarDialogoRegistrarProfesor(context);
+              },
             ),
           ),
-          if (cargando)
-            const Center(
-              child: Text('Cargando...'),
-            )
-          else
-            Flexible(
-                //flex: 2,
-                fit: FlexFit.tight,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemCount: tutors.length,
-                    itemBuilder: (context, index) {
-                      return DragTarget<Student>(
-                        builder: (context, List<Student?> candidateData,
-                            rejectedData) {
-                          return TutorDisplayer(
-                            index: index,
-                            tutor: tutors[index],
-                          );
-                        },
-                        onWillAccept: (data) {
-                          //print('onWillAccept ejecutado');
-                          return true;
-                        },
-                        onAccept: (Student data) {
-                          print('se agrego un estudiante');
-                          print(data.name);
-                          print(index);
-
-                          asignStudent(data.id, tutors[index].id)
-                              .then((value) => {
-                                    if (value.contains('Error'))
-                                      {print(value)}
-                                    else
-                                      {
-                                        setState(() {
-                                          tutors[index].myStudents.add(data);
-                                        })
-                                      }
-                                  });
-                        },
-                      );
-                    },
-                  ),
-                )),
-          if (assignless.isNotEmpty)
-            Flexible(
-              //flex: 1,
+        ),
+        if (cargando)
+          const Center(
+              child: CircularProgressIndicator(
+                  strokeWidth: 4,
+                  backgroundColor: Colors.grey,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+        else
+          Flexible(
+              //flex: 2,
+              fit: FlexFit.tight,
               child: Container(
-                margin: const EdgeInsets.all(10),
-                padding: const EdgeInsets.all(20),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: const BorderRadius.all(Radius.circular(6))),
-                height: 200,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ListView.builder(
-                  itemCount: assignless.length,
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: tutors.length,
                   itemBuilder: (context, index) {
-                    return buildStudentDraggable(assignless[index], () {
-                      setState(() {
-                        assignless.removeAt(index);
-                      });
-                    });
+                    return DragTarget<Student>(
+                      builder: (context, List<Student?> candidateData,
+                          rejectedData) {
+                        return TutorDisplayer(
+                          index: index,
+                          tutor: tutors[index],
+                        );
+                      },
+                      onWillAccept: (data) {
+                        //print('onWillAccept ejecutado');
+                        return true;
+                      },
+                      onAccept: (Student data) {
+                        print('se agrego un estudiante');
+                        print(data.name);
+                        print(index);
+
+                        asignStudent(data.id, tutors[index].id)
+                            .then((value) => {
+                                  if (value.contains('Error'))
+                                    {print(value)}
+                                  else
+                                    {
+                                      setState(() {
+                                        tutors[index].myStudents.add(data);
+                                      })
+                                    }
+                                });
+                      },
+                    );
                   },
                 ),
+              )),
+        if (assignless.isNotEmpty)
+          Flexible(
+            //flex: 1,
+            child: Container(
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: const BorderRadius.all(Radius.circular(6))),
+              height: 250,
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    child: const Text(
+                      'Estudiantes sin tutor',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black),
+                    ),
+                  ),
+                  const Divider(
+                    thickness: 2,
+                    color: Colors.black,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: assignless.length,
+                      itemBuilder: (context, index) {
+                        return buildStudentDraggable(assignless[index], () {
+                          setState(() {
+                            assignless.removeAt(index);
+                          });
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
-            )
-        ],
-      ),
+            ),
+          )
+      ],
     );
   }
 
@@ -546,7 +563,7 @@ class _TutorDisplayerState extends State<TutorDisplayer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.orange.shade400, // Color de fondo naranja
         borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
@@ -555,7 +572,7 @@ class _TutorDisplayerState extends State<TutorDisplayer> {
             color: Colors.grey.withOpacity(0.5), // Sombra con opacidad
             spreadRadius: 2,
             blurRadius: 4,
-            offset: Offset(0, 3), // Desplazamiento de la sombra
+            offset: const Offset(0, 3), // Desplazamiento de la sombra
           ),
         ],
       ),
