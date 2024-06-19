@@ -49,11 +49,12 @@ class UserProvider with ChangeNotifier {
   }
 
   bool insertData(Map<String, dynamic> data) {
-    print('Entra al provider');
+    //print('Entra al provider');
     _user.name = data['Name'];
     _user.lastnameA = data['FirstSurname'];
     _user.lastnameB = data['SecondSurname'];
     _user.mail = data['Mail'];
+    //_user.code = data['Code'];
 
     //_user.code = data['Code'];
     //Future.microtask(() {

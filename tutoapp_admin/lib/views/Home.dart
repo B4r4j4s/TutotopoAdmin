@@ -1,21 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+//import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:convert';
+import 'dart:io';
 import '../Solicitudes.dart';
-
-final List<Aviso> anunciosPruebas = [
-  Aviso('¡Conéctate al MUSA en Vivo!', 'Rectoria',
-      'Les extendemos una cordial invitación al evento del Mes de la Universidad de Ciencias Aplicadas (MUSA). Este emocionante encuentro será transmitido en vivo, donde podrán participar, disfrutar de presentaciones inspiradoras y conectarse con la vibrante comunidad académica. ¡No se lo pierdan!'),
-  Aviso('Importante Mensaje', 'Coordinador',
-      'Estimada comunidad académica, queremos informarles sobre un asunto relevante. Les pedimos su atención y colaboración para garantizar el éxito de esta iniciativa. Juntos, podemos hacer que nuestro entorno educativo sea aún mejor. ¡Gracias por su compromiso y participación continua!'),
-  Aviso('¡Conferencia Especial!', 'Coordinador',
-      'Nos complace anunciar una conferencia especial que enriquecerá nuestros conocimientos académicos. Expertos destacados compartirán valiosas perspectivas sobre el tema. ¡Los invitamos a participar y aprovechar esta oportunidad única de aprendizaje!'),
-  Aviso('Fechas Importantes', 'Coordinador',
-      'Queremos recordarles sobre fechas cruciales este mes. Desde la inscripción para eventos hasta plazos importantes, les instamos a estar al tanto del calendario académico. Manténganse informados y aprovechen al máximo las oportunidades que se presentan. ¡Gracias por su atención!'),
-  Aviso('Hora hacer preregistro', ' Coordinador',
-      'Solo tendran los siguientes 3 dias para hacer el preregistro, les recomendamos tener cuidao con las fecha para no caer en registro General'),
-  Aviso('Bienvenidos', 'Coordinador',
-      'Bienvenidos a los nuevos integrantes de la carrera, les deseamos mucha suerte en este nuevo capitulo de su vida y los invitamos a formar parte de esta Gran Comunidad Universitaria'),
-];
 
 class Aviso {
   String titulo;
@@ -49,15 +37,12 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late TextEditingController title;
-  late TextEditingController content;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final List<Aviso> anuncios = [];
+  List<Aviso> anuncios = [];
   bool dataArrived = false;
-  @override
-  void initState() {
-    title = TextEditingController();
-    content = TextEditingController();
+  bool showForm = true;
+  void cargarDatos() {
+    print('Cargando datos');
+    dataArrived = false;
     obtainThings("announcements").then((values) {
       if (values.isNotEmpty) {
         if (!values[0].containsKey('Error')) {
@@ -71,141 +56,55 @@ class _HomeState extends State<Home> {
         dataArrived = true;
       });
     });
+  }
 
+  @override
+  void initState() {
+    cargarDatos();
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    title.dispose();
-    content.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-          Card(
-            color: Colors.grey[200], // Cambia el color de fondo a uno más claro
-            child: Form(
-              key: _formKey,
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(40),
-                title: const Text(
-                  'Agregar un mensaje',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                ),
-                subtitle: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    TextFormField(
-                      controller: title,
-                      decoration: const InputDecoration(
-                        labelText: 'Titulo',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El anuncio necesita un titulo.';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: content,
-                      minLines: 1,
-                      maxLines: 10,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Contenido',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'El anuncio necesita contenido.';
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.add),
-                  iconSize: 36, // Tamaño del ícono
-                  color: Colors.deepOrange[900], // Color del ícono
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Map<String, dynamic> data = {
-                        "Title": title.text,
-                        "Content": content.text
-                      };
-                      createThings(data, "announcements").then((value) {
-                        if (!value.contains('Error')) {
-                          setState(() {
-                            anuncios.add(
-                                Aviso(title.text, 'Coordinador', content.text));
-                            title.text = '';
-                            content.text = '';
-                          });
-                        }
-                      });
-                    }
-                  },
-                ),
-              ),
-            ),
-          ),
-          /*const Padding(
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Divider(thickness: 4),
-          ),*/
-          if (dataArrived)
-            if (anuncios.isNotEmpty)
-              Expanded(
-                  child: ListView.builder(
-                itemCount: anuncios.length,
-                padding: const EdgeInsets.all(20), // Ajustar la longitud
-                itemBuilder: (context, index) {
-                  return AnuncioCard(
-                    aviso: anuncios[index],
-                    callback: (id) {
-                      showConfirmationDialog(context).then(
-                        (value) {
-                          if (value != null && value) {
-                            eliminateThings(id, 'announcements');
-                            setState(() {
-                              anuncios.removeAt(index);
-                            });
-                          }
-                        },
-                      );
-                    },
-                  );
-                },
-              ))
-            else
-              const Expanded(
-                  child: Center(
-                      child: Text(
-                'No hay anuncios para mostrar',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              )))
-          else
-            const Expanded(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            )
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.grey.shade50,
+        centerTitle: true,
+        title: const Text('Anuncios',
+            style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold)),
+      ),
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: showForm
+              ? AnuncioShower(
+                  dataArrived: dataArrived,
+                  anuncios: anuncios,
+                  callbackSetState: (i) {
+                    setState(() {
+                      anuncios.removeAt(i);
+                    });
+                  })
+              : NuevoAnuncio(
+                  addData: () => setState(() {
+                    showForm = !showForm;
+                    cargarDatos();
+                  }),
+                )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            showForm = !showForm;
+          });
+        },
+        child: Icon(showForm ? Icons.add : Icons.cancel),
       ),
     );
   }
@@ -219,48 +118,89 @@ class AnuncioCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: ListTile(
-            title: Text(aviso.titulo),
-            titleTextStyle: const TextStyle(
-              fontSize: 25.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-            subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Divider(thickness: 2),
-                Text(
-                  aviso.autor,
-                  textAlign: TextAlign.right,
+    return Container(
+      margin: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.grey[100],
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Colors.grey),
+      ),
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                aviso.titulo,
+                style: const TextStyle(
+                  fontSize: 25.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_forever),
+                color: Colors.black,
+                onPressed: () {
+                  callback(aviso.id);
+                },
+              ),
+            ],
+          ),
+          const SizedBox(width: 4),
+          const Divider(),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Flexible(
+                flex: 2,
+                child: Text(
+                  aviso.contenido,
+                  textAlign: TextAlign.justify,
                   style: const TextStyle(
-                    fontSize: 18.0,
-                    color: Colors.black87,
+                    fontSize: 16.0,
+                    color: Colors.black,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    aviso.contenido,
-                    textAlign: TextAlign.justify,
-                    style: const TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.black,
-                        fontStyle: FontStyle.italic),
-                  ),
+              ),
+              const SizedBox(width: 16),
+              Flexible(
+                flex: 1,
+                child: Image.network(
+                  'https://example.com/tu-imagen.jpg',
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  (loadingProgress.expectedTotalBytes ?? 1)
+                              : null,
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (BuildContext context, Object error,
+                      StackTrace? stackTrace) {
+                    return const SizedBox(
+                      width: 0,
+                      height: 0,
+                    ); // No muestra nada si hay un error al cargar la imagen
+                  },
                 ),
-              ],
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_forever),
-              iconSize: 36, // Tamaño del ícono
-              color: Colors.orange[900], // Color del ícono
-              onPressed: () {
-                callback(aviso.id);
-              },
-            )));
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -288,4 +228,270 @@ Future<bool?> showConfirmationDialog(BuildContext context) async {
       );
     },
   );
+}
+
+class NuevoAnuncio extends StatefulWidget {
+  final Function() addData;
+  NuevoAnuncio({required this.addData});
+  @override
+  _NuevoAnuncioState createState() => _NuevoAnuncioState();
+}
+
+class _NuevoAnuncioState extends State<NuevoAnuncio> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _contentController = TextEditingController();
+  String? _selectedImagePath;
+  String? _base64Image;
+
+  Future<void> _pickImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowMultiple: false,
+    );
+
+    if (result != null && result.files.single.path != null) {
+      File imageFile = File(result.files.single.path!);
+      _selectedImagePath = imageFile.path;
+      _base64Image = base64Encode(await imageFile.readAsBytes());
+
+      setState(() {});
+    }
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      String title = _titleController.text;
+      String content = _contentController.text;
+
+      var data = {
+        "Title": title,
+        "Content": content,
+      };
+      if (_base64Image != null) {
+        data["Image"] = _base64Image!;
+      }
+
+      createThings(data, 'announcements').then(
+        (value) {
+          if (value.contains('Error')) {
+            showMessage(context, 'Error', Colors.red, Durations.extralong2);
+          } else {
+            widget.addData();
+          }
+        },
+      );
+
+      setState(() {
+        _titleController.clear();
+        _contentController.clear();
+        _selectedImagePath = null;
+        _base64Image = null;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(children: [
+      Card(
+        color: Colors.white,
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Agregar un mensaje',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: 'Título',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'El anuncio necesita un título.';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
+                  controller: _contentController,
+                  minLines: 3,
+                  maxLines: 10,
+                  decoration: InputDecoration(
+                    labelText: 'Contenido',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'El anuncio necesita contenido.';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: _selectedImagePath != null
+                      ? Center(
+                          child: Image.file(
+                            File(_selectedImagePath!),
+                            fit: BoxFit.fitHeight,
+                            height: 400,
+                          ),
+                        )
+                      : Center(
+                          child: Container(
+                            width: 150,
+                            height: 150,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            child: const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.upload,
+                                    size: 50,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    'Seleccionar una imagen',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text('Publicar'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ]);
+  }
+}
+
+class AnuncioShower extends StatelessWidget {
+  final bool dataArrived;
+  final List<Aviso> anuncios;
+  final Function(int) callbackSetState;
+  const AnuncioShower(
+      {super.key,
+      required this.dataArrived,
+      required this.anuncios,
+      required this.callbackSetState});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (dataArrived)
+            if (anuncios.isNotEmpty)
+              Expanded(
+                  child: ListView.builder(
+                itemCount: anuncios.length,
+                padding: const EdgeInsets.all(20),
+                itemBuilder: (context, index) {
+                  return AnuncioCard(
+                    aviso: anuncios[index],
+                    callback: (id) {
+                      showConfirmationDialog(context).then(
+                        (value) {
+                          if (value != null && value) {
+                            eliminateThings(id, 'announcements');
+                            callbackSetState(index);
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
+              ))
+            else
+              const Center(
+                  child: Text(
+                'No hay anuncios para mostrar',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ))
+          else
+            const Center(
+              child: CircularProgressIndicator(),
+            )
+        ],
+      ),
+    );
+  }
+}
+
+void showMessage(
+    BuildContext context, String text, Color bgColor, Duration duration) {
+  final snackBar = SnackBar(
+    content: Text(
+      text,
+      style: const TextStyle(color: Colors.white),
+    ),
+    backgroundColor: bgColor,
+    duration: duration,
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }

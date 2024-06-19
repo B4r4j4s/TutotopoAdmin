@@ -110,6 +110,39 @@ Future<String> createThings(Map<String, dynamic> datos, String term) async {
   }
 }
 
+Future<String> createThings3(Map<String, dynamic> datos, String term) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
+  // Obtén el token desde Flutter Secure Storage
+  final String? token = await secureStorage.read(key: 'access_token');
+
+  if (token == null) {
+    return 'Error: Token nulo';
+  }
+  final url = Uri.parse('https://tutoapp.onrender.com/$term');
+  // Datos del estudiante
+
+  try {
+    final respuesta = await http.post(
+      url,
+      headers: {'Auth': token},
+      body: jsonEncode(datos),
+    );
+
+    if (respuesta.statusCode == 200 || respuesta.statusCode == 201) {
+      return 'se hizo';
+    } else {
+      // Manejar errores
+      print('Error ${respuesta.statusCode} | ${respuesta.body}');
+      return 'Error ${respuesta.statusCode} | ${respuesta.body}';
+    }
+  } catch (error) {
+    // Manejar errores de red o cualquier otra excepción
+    print('Error: $error');
+    return 'Error de red o excepción $error';
+  }
+}
+
 Future<Map<String, dynamic>> createThings2(
     Map<String, dynamic> datos, String term) async {
   final FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -130,7 +163,7 @@ Future<Map<String, dynamic>> createThings2(
       body: jsonEncode(datos),
     );
 
-    if (respuesta.statusCode == 200) {
+    if (respuesta.statusCode == 200 || respuesta.statusCode == 201) {
       Map<String, dynamic> datosRespuesta = jsonDecode(respuesta.body);
 
       return datosRespuesta;
@@ -177,6 +210,45 @@ Future<Map<String, dynamic>> modifyThings(
       return {
         'Error': 'Error en la solicitud HTTP',
         'statusCode': respuesta.statusCode
+      };
+    }
+  } catch (error) {
+    // Manejar errores de red o cualquier otra excepción
+    print('Error: $error');
+    return {'Error': 'Error de red o excepción', 'exception': error.toString()};
+  }
+}
+
+Future<Map<String, dynamic>> modifyThings2(
+    Map<String, dynamic> datos, String term) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
+  // Obtén el token desde Flutter Secure Storage
+  final String? token = await secureStorage.read(key: 'access_token');
+
+  if (token == null) {
+    return {'Error': 'Token nulo'};
+  }
+  final url = Uri.parse('https://tutoapp.onrender.com/admin/$term');
+  // Datos del estudiante
+
+  try {
+    final respuesta = await http.put(
+      url,
+      headers: {'Auth': token},
+      body: jsonEncode(datos),
+    );
+
+    if (respuesta.statusCode == 200) {
+      Map<String, dynamic> datosRespuesta = jsonDecode(respuesta.body);
+
+      return datosRespuesta;
+    } else {
+      print('Error ${respuesta.statusCode} | ${respuesta.body}');
+      return {
+        'Error': 'Error en la solicitud',
+        'statusCode': respuesta.statusCode,
+        'Body': respuesta.body
       };
     }
   } catch (error) {
@@ -261,6 +333,45 @@ Future<List<Map<String, dynamic>>> obtainThings(String term) async {
     return [
       {'Error': 'Error de red o excepción', 'exception': error.toString()}
     ];
+  }
+}
+
+Future<Map<String, dynamic>> obtainThings2(String term) async {
+  final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+
+  // Obtén el token desde Flutter Secure Storage
+  final String? token = await secureStorage.read(key: 'access_token');
+  //print(token);
+  if (token == null) {
+    return {'Error': 'Token nulo'};
+  }
+  final url = Uri.parse('https://tutoapp.onrender.com/admin/$term');
+
+  //print('Jalando categorias');
+  try {
+    final respuesta = await http.get(url, headers: {'Auth': token});
+
+    if (respuesta.statusCode == 200) {
+      // Procesar la respuesta si es necesario
+
+      Map<String, dynamic> data = jsonDecode(respuesta.body);
+
+      // Convertir la lista de dynamic a una lista de Map<String, dynamic>
+
+      //print('Los datos si llegaron');
+      return data;
+    } else {
+      // Manejar errores
+      print('Error-HTTP: ${respuesta.statusCode} ${respuesta.body}');
+      return {
+        'Error': 'Error en la solicitud HTTP',
+        'statusCode': respuesta.statusCode
+      };
+    }
+  } catch (error) {
+    // Manejar errores de red o cualquier otra excepción
+    print('Error: $error');
+    return {'Error': 'Error de red o excepción', 'exception': error.toString()};
   }
 }
 

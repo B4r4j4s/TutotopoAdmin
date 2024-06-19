@@ -26,9 +26,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'ADMIN',
           theme: ThemeData(
-            // This is the theme of your application.
-
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
             useMaterial3: true,
           ),
           home: const Login(),

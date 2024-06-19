@@ -10,18 +10,18 @@ class Categoria {
 
   static List<Categoria> fromMapList(List<Map<String, dynamic>> mapList) {
     return mapList.map((map) {
-      return Categoria(map['CategoryType'], DateTime.parse(map['CreatedAt']),
-          map['ID'].toString());
+      return Categoria(
+          map["Place"], DateTime.parse(map['CreatedAt']), map['ID'].toString());
     }).toList();
   }
 }
 
-class CategoriasAD extends StatefulWidget {
+class LugaresAD extends StatefulWidget {
   @override
-  _CategoriasADState createState() => _CategoriasADState();
+  _LugaresADState createState() => _LugaresADState();
 }
 
-class _CategoriasADState extends State<CategoriasAD> {
+class _LugaresADState extends State<LugaresAD> {
   List<Categoria> categorias = [];
   bool _cargando = false;
   late TextEditingController cat;
@@ -29,7 +29,7 @@ class _CategoriasADState extends State<CategoriasAD> {
   void initState() {
     super.initState();
     cat = TextEditingController();
-    obtainThings('categories').then(
+    obtainThings('places').then(
       (value) {
         if (value[0].containsKey('Error')) {
           print(value[0]);
@@ -50,7 +50,7 @@ class _CategoriasADState extends State<CategoriasAD> {
         backgroundColor: Colors.grey.shade200,
         centerTitle: true,
         title: const Text(
-          'Categorias',
+          'Lugares',
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
       ),
@@ -69,7 +69,7 @@ class _CategoriasADState extends State<CategoriasAD> {
                     controller: cat,
                     style: const TextStyle(color: Colors.black),
                     decoration: const InputDecoration(
-                      hintText: 'Nueva categoria',
+                      hintText: 'Nuevo Lugar',
                       hintStyle: TextStyle(color: Colors.grey),
                       border: OutlineInputBorder(),
                       focusedBorder: OutlineInputBorder(
@@ -85,15 +85,18 @@ class _CategoriasADState extends State<CategoriasAD> {
                 ElevatedButton(
                   onPressed: () {
                     if (!(cat.text == '') || cat.text.isNotEmpty) {
-                      var newC = {"CategoryType": cat.text};
+                      var newC = {"Place": cat.text};
                       String id;
-                      createThings2(newC, 'categories').then((value) => {
+                      createThings2(newC, 'places').then((value) => {
                             if (!(value.containsKey('Error')))
                               {
-                                id = value["categories"]["ID"].toString(),
+                                id = value["place"]["ID"].toString(),
                                 setState(() {
-                                  categorias.add(
-                                      Categoria(cat.text, DateTime.now(), id));
+                                  categorias.add(Categoria(
+                                      value["place"]["Place"],
+                                      DateTime.parse(
+                                          value["place"]['CreatedAt']),
+                                      id));
                                   cat.text = '';
                                 })
                               }
@@ -119,20 +122,18 @@ class _CategoriasADState extends State<CategoriasAD> {
             child: _cargando
                 ? const Center(child: CircularProgressIndicator())
                 : categorias.isEmpty
-                    ? const Center(child: Text('No hay categorias'))
+                    ? const Center(child: Text('No hay lugares'))
                     : ListView.builder(
                         itemCount: categorias.length,
                         itemBuilder: (context, index) {
                           return CategoriaTile(
                               categoria: categorias[index],
                               onEdit: (v) {
-                                print('callback?');
-                                modifyThings({"CategoryType": v}, 'categories',
+                                modifyThings({"Place": v}, 'places',
                                         categorias[index].id)
                                     .then((value) => {
                                           if (!value.containsKey('Error'))
                                             {
-                                              print('se modifico'),
                                               setState(() {
                                                 categorias[index].nombre = v;
                                               })
@@ -182,7 +183,7 @@ class _CategoriaTileState extends State<CategoriaTile> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(6),
+      margin: const EdgeInsets.all(8),
       child: ListTile(
         contentPadding: const EdgeInsets.all(8),
         title: _isEditing
@@ -195,12 +196,15 @@ class _CategoriaTileState extends State<CategoriaTile> {
                   _toggleEdit();
                 },*/
               )
-            : Text(widget.categoria.nombre,
+            : Text(
+                widget.categoria.nombre,
                 style:
-                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 20)),
+                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+              ),
         subtitle: Text(
-            'Creado en: ${_twoDigits(widget.categoria.creadoEn.day)}/${_twoDigits(widget.categoria.creadoEn.month)}/${widget.categoria.creadoEn.year}',
-            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 14)),
+          'Creado en: ${_twoDigits(widget.categoria.creadoEn.day)}/${_twoDigits(widget.categoria.creadoEn.month)}/${widget.categoria.creadoEn.year}',
+          style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 14),
+        ),
         leading: _isEditing
             ? IconButton(
                 icon: const Icon(Icons.done),

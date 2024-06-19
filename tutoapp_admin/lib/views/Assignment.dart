@@ -185,6 +185,12 @@ class _AssignmentState extends State<Assignment> {
   List<Student> assignless = [];
   int tutorIndex = 0;
   bool cargando = true;
+
+  int form = 1;
+  bool showform = true;
+  bool showanotherform = true;
+  int zoomIndex = 0;
+
   Future<List<List<dynamic>>> fetchTutores() async {
     List<List<dynamic>> result = [];
 
@@ -227,13 +233,9 @@ class _AssignmentState extends State<Assignment> {
     fetchTutores().then(
       (value) {
         if (value.isNotEmpty) {
-          //print('Actualizando la data');
-          //print(value[0]);
           tutors = value[0].cast<Tutor>();
-          //print(value[1]);
           assignless = value[1].cast<Student>();
           setState(() {
-            //print('setstate');
             cargando = false;
           });
         }
@@ -245,17 +247,280 @@ class _AssignmentState extends State<Assignment> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          // Titulo
-          padding: const EdgeInsets.all(15),
-          child: ListTile(
-            title: const Text(
-              'Asignacion',
-              style: TextStyle(fontSize: 30),
+    if (form == 1) {
+      showform = true;
+    } else if (form == 2) {
+      showform = false;
+      showanotherform = true;
+    } else if (form == 3) {
+      showform = false;
+      showanotherform = false;
+    }
+    return Scaffold(
+      appBar: AppBar(
+          title: const Text(
+            'Asignación',
+            style: TextStyle(fontSize: 30),
+          ),
+          centerTitle: true),
+      body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: showform
+              ? AssigmentDisplay(
+                  cargando: cargando,
+                  tutors: tutors,
+                  assignless: assignless,
+                  callbackZoom: (index) {
+                    setState(() {
+                      form = 3;
+                      zoomIndex = index;
+                    });
+                  },
+                )
+              : showanotherform
+                  ? RegistrarProfesorWidget(
+                      onRegistrar: () {
+                        setState(() {
+                          cargando = true;
+                          form = 1;
+                          fetchTutores().then(
+                            (value) {
+                              if (value.isNotEmpty) {
+                                tutors = value[0].cast<Tutor>();
+                                assignless = value[1].cast<Student>();
+                                setState(() {
+                                  cargando = false;
+                                });
+                              }
+                            },
+                          );
+                        });
+                      },
+                    )
+                  : ProfesorCard(
+                      tutor: tutors[zoomIndex],
+                      callbackOut: () {},
+                    )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            if (form == 1) {
+              form = 2;
+            } else {
+              form = 1;
+            }
+          });
+        },
+        child: Icon(showform ? Icons.person_add : Icons.cancel),
+      ),
+    );
+  }
+}
+
+class RegistrarProfesorWidget extends StatefulWidget {
+  final void Function() onRegistrar;
+
+  const RegistrarProfesorWidget({Key? key, required this.onRegistrar})
+      : super(key: key);
+
+  @override
+  _RegistrarProfesorWidgetState createState() =>
+      _RegistrarProfesorWidgetState();
+}
+
+class _RegistrarProfesorWidgetState extends State<RegistrarProfesorWidget> {
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidoPaternoController =
+      TextEditingController();
+  final TextEditingController apellidoMaternoController =
+      TextEditingController();
+  final TextEditingController correoController = TextEditingController();
+  final TextEditingController codigoController = TextEditingController();
+  final TextEditingController contrasenaController = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  void dispose() {
+    nombreController.dispose();
+    apellidoMaternoController.dispose();
+    apellidoPaternoController.dispose();
+    correoController.dispose();
+    codigoController.dispose();
+    contrasenaController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Text(
+            'Registrar Profesor',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: nombreController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese el nombre';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: apellidoPaternoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Apellido Paterno',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese el apellido paterno';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: apellidoMaternoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Apellido Materno',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese el apellido materno';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: correoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Correo',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese el correo';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: codigoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Código',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese el código';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 10),
+                TextFormField(
+                  controller: contrasenaController,
+                  decoration: const InputDecoration(
+                    labelText: 'Contraseña',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Ingrese la contraseña';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      // Solo registrar si el formulario es válido
+                      _registrarProfesor();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 30),
+                    textStyle: const TextStyle(fontSize: 18),
+                  ),
+                  child: const Text('Registrar'),
+                ),
+              ],
             ),
-            trailing: IconButton(
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _registrarProfesor() {
+    // Crear un mapa con los datos del profesor
+    final profesorData = {
+      "Name": nombreController.text,
+      "FirstSurname": apellidoPaternoController.text,
+      "SecondSurname": apellidoMaternoController.text,
+      "Mail": correoController.text,
+      "Code": codigoController.text,
+      "PasswordHash": contrasenaController.text,
+    };
+    createThings3(profesorData, 'tutors/register').then((value) => {
+          if (value.contains('Error'))
+            {showMessage(context, value, Colors.red, Durations.extralong4)}
+          else
+            {
+              showMessage(context, 'Profesor agregado', Colors.green,
+                  Durations.extralong4),
+              widget.onRegistrar()
+            }
+        });
+  }
+}
+
+class AssigmentDisplay extends StatefulWidget {
+  bool cargando;
+  List<Tutor> tutors;
+  List<Student> assignless;
+  final Function(int) callbackZoom;
+  AssigmentDisplay(
+      {super.key,
+      required this.cargando,
+      required this.tutors,
+      required this.assignless,
+      required this.callbackZoom});
+
+  @override
+  State<AssigmentDisplay> createState() => _AssigmentDisplayState();
+}
+
+class _AssigmentDisplayState extends State<AssigmentDisplay> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        /* IconButton(
               padding: const EdgeInsets.all(10),
               icon: const Icon(Icons.person_add_alt, size: 25),
               onPressed: () async {
@@ -272,98 +537,148 @@ class _AssignmentState extends State<Assignment> {
                 }
                 //mostrarDialogoRegistrarProfesor(context);
               },
-            ),
-          ),
-        ),
-        if (cargando)
-          const Center(
-              child: CircularProgressIndicator(
-                  strokeWidth: 4,
-                  backgroundColor: Colors.grey,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.orange)))
+            ),*/
+        if (widget.cargando)
+          const Expanded(
+            child: Center(
+                child: CircularProgressIndicator(
+                    strokeWidth: 4,
+                    backgroundColor: Colors.grey,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Color.fromARGB(255, 82, 113, 255)))),
+          )
         else
           Flexible(
               //flex: 2,
               fit: FlexFit.tight,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  scrollDirection: Axis.vertical,
-                  itemCount: tutors.length,
-                  itemBuilder: (context, index) {
-                    return DragTarget<Student>(
-                      builder: (context, List<Student?> candidateData,
-                          rejectedData) {
-                        return TutorDisplayer(
-                          index: index,
-                          tutor: tutors[index],
-                        );
-                      },
-                      onWillAccept: (data) {
-                        //print('onWillAccept ejecutado');
-                        return true;
-                      },
-                      onAccept: (Student data) {
-                        print('se agrego un estudiante');
-                        print(data.name);
-                        print(index);
+              child: Column(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Text(
+                        'Tutores',
+                        style: TextStyle(
+                            fontSize: 26, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const Divider(
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis.vertical,
+                        itemCount: widget.tutors.length,
+                        itemBuilder: (context, index) {
+                          return DragTarget<Student>(
+                            builder: (context, List<Student?> candidateData,
+                                rejectedData) {
+                              Tutor tutor = widget.tutors[index];
+                              return Container(
+                                margin: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    color: Colors.grey.shade100,
+                                    borderRadius: BorderRadius.circular(2),
+                                    border: Border.all(
+                                        color: Colors.grey.shade400)),
+                                child: ListTile(
+                                  onTap: () {
+                                    widget.callbackZoom(index);
+                                  },
+                                  title: Text(
+                                    tutor.name,
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  leading:
+                                      const Icon(Icons.co_present_outlined),
+                                  trailing: Text(
+                                    tutor.myStudents.length.toString(),
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                  subtitle: Text(
+                                    tutor.mail,
+                                    style: const TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              );
+                            },
+                            onWillAccept: (data) {
+                              return true;
+                            },
+                            onAccept: (Student data) async {
+                              bool conf = await showConfirmacionDialog(context,
+                                  data.name, widget.tutors[index].name);
+                              if (conf == false) {
+                                return;
+                              }
 
-                        asignStudent(data.id, tutors[index].id)
-                            .then((value) => {
-                                  if (value.contains('Error'))
-                                    {print(value)}
-                                  else
-                                    {
-                                      setState(() {
-                                        tutors[index].myStudents.add(data);
-                                      })
-                                    }
-                                });
-                      },
-                    );
-                  },
-                ),
+                              asignStudent(data.id, widget.tutors[index].id)
+                                  .then((value) => {
+                                        if (value.contains('Error'))
+                                          {print(value)}
+                                        else
+                                          {
+                                            setState(() {
+                                              widget.tutors[index].myStudents
+                                                  .add(data);
+                                              widget.assignless.removeAt(widget
+                                                  .assignless
+                                                  .indexWhere((element) =>
+                                                      element.id == data.id));
+                                            })
+                                          }
+                                      });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               )),
-        if (assignless.isNotEmpty)
+        if (widget.assignless.isNotEmpty)
           Flexible(
             //flex: 1,
+            fit: FlexFit.tight,
             child: Container(
               margin: const EdgeInsets.all(10),
-              padding: const EdgeInsets.all(20),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: const BorderRadius.all(Radius.circular(6))),
-              height: 250,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: Colors.grey.shade100),
               child: Column(
-                mainAxisSize: MainAxisSize.max,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    child: const Text(
-                      'Estudiantes sin tutor',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black),
-                    ),
+                  const Text(
+                    'Estudiantes sin tutor',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
                   ),
                   const Divider(
                     thickness: 2,
                     color: Colors.black,
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: assignless.length,
-                      itemBuilder: (context, index) {
-                        return buildStudentDraggable(assignless[index], () {
-                          setState(() {
-                            assignless.removeAt(index);
-                          });
-                        });
-                      },
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ListView.builder(
+                        itemCount: widget.assignless.length,
+                        itemBuilder: (context, index) {
+                          return buildStudentDraggable(
+                              widget.assignless[index]);
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -374,7 +689,7 @@ class _AssignmentState extends State<Assignment> {
     );
   }
 
-  Widget buildStudentDraggable(Student student, Function() callback) {
+  Widget buildStudentDraggable(Student student) {
     return Draggable(
       data: student,
       feedback: Container(
@@ -392,252 +707,194 @@ class _AssignmentState extends State<Assignment> {
         ),
       ),
       childWhenDragging: Container(),
-      child: ListTile(
-        title: Text(student.name),
-        subtitle: Text(student.mail),
-      ),
-      onDragCompleted: () {
-        // Esta función se ejecutará cuando el Draggable sea soltado con éxito
-        print("Draggable completado con éxito. Fue aceptado.");
-        callback();
-      },
-    );
-  }
-}
-
-class RegistrarProfesorDialog extends StatefulWidget {
-  @override
-  _RegistrarProfesorDialogState createState() =>
-      _RegistrarProfesorDialogState();
-}
-
-class _RegistrarProfesorDialogState extends State<RegistrarProfesorDialog> {
-  final TextEditingController nombreController = TextEditingController();
-  final TextEditingController apellidoPaternoController =
-      TextEditingController();
-  final TextEditingController apellidoMaternoController =
-      TextEditingController();
-  final TextEditingController correoController = TextEditingController();
-  final TextEditingController codigoController = TextEditingController();
-  final TextEditingController contrasenaController = TextEditingController();
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Registrar Profesor'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
+      child: Container(
+        margin: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(2)),
+            border: Border.all(color: Colors.black54)),
+        child: ListTile(
+          leading: const Icon(Icons.person_4_rounded),
+          title: Text(student.name),
+          subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: nombreController,
-                decoration: const InputDecoration(labelText: 'Nombre'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese el nombre';
-                  }
-                  return null;
-                },
+              Text(
+                student.code,
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              TextFormField(
-                controller: apellidoPaternoController,
-                decoration:
-                    const InputDecoration(labelText: 'Apellido Paterno'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese el apellido paterno';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: apellidoMaternoController,
-                decoration:
-                    const InputDecoration(labelText: 'Apellido Materno'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese el apellido materno';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: correoController,
-                decoration: const InputDecoration(labelText: 'Correo'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese el correo';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: codigoController,
-                decoration: const InputDecoration(labelText: 'Código'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese el código';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: contrasenaController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'Contraseña'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Ingrese la contraseña';
-                  }
-                  return null;
-                },
-              ),
+              Text(student.mail),
             ],
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(); // Cerrar el diálogo
-          },
-          child: const Text('Cancelar'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              // Solo registrar si el formulario es válido
-              registrarProfesor();
-            }
-          },
-          child: const Text('Registrar'),
-        ),
-      ],
-    );
-  }
-
-  void registrarProfesor() {
-    // Aquí puedes acceder a los valores de los controladores y realizar la lógica de registro
-    String nombre = nombreController.text;
-    String apellidoPaterno = apellidoPaternoController.text;
-    String apellidoMaterno = apellidoMaternoController.text;
-    String correo = correoController.text;
-    //String codigo = codigoController.text;
-    //String contrasena = contrasenaController.text;
-
-    // Hacer la llamada para el registro
-
-    // crear el tutor con los datos completos
-    Tutor tutor = Tutor(0, '$nombre $apellidoPaterno $apellidoMaterno', correo);
-
-    // Cerrar el diálogo
-    Navigator.of(context).pop(tutor);
-  }
-}
-
-void mostrarDialogoRegistrarProfesor(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return RegistrarProfesorDialog();
-    },
-  );
-}
-
-class TutorDisplayer extends StatefulWidget {
-  final int index;
-  final Tutor tutor;
-  const TutorDisplayer({super.key, required this.index, required this.tutor});
-
-  @override
-  State<TutorDisplayer> createState() => _TutorDisplayerState();
-}
-
-class _TutorDisplayerState extends State<TutorDisplayer> {
-  bool show = false;
-  String recoveredData = '';
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade400, // Color de fondo naranja
-        borderRadius: BorderRadius.circular(10.0), // Bordes redondeados
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Sombra con opacidad
-            spreadRadius: 2,
-            blurRadius: 4,
-            offset: const Offset(0, 3), // Desplazamiento de la sombra
-          ),
-        ],
-      ),
-      child: ListTile(
-        onTap: () {
-          showAlumnosDialog(
-              context, widget.tutor.name, widget.tutor.myStudents);
-        },
-        title: Text(
-          widget.tutor.name,
-          style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white), // Texto blanco para contraste
-        ),
-        trailing: Text(
-          widget.tutor.myStudents.length.toString(),
-          style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white), // Texto blanco para contraste
-        ),
-        subtitle: Text(
-          widget.tutor.mail,
-          style: const TextStyle(
-              color: Colors.white), // Texto blanco para contraste
-        ),
-      ),
-    );
-  }
-
-  void showAlumnosDialog(
-      BuildContext context, String profesor, List<Student> alumnos) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(profesor)),
-          content: Container(
-            width: 300,
-            height: double.infinity,
-            padding: const EdgeInsets.all(10),
-            child: ListView.builder(
-              itemCount: alumnos.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: const Icon(Icons.face_rounded),
-                  title: Text(alumnos[index].name),
-                  subtitle: Text(alumnos[index].mail),
-                );
-              },
-            ),
-          ),
-          /*actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el diálogo
-              },
-              child: Text('Cerrar'),
-            ),
-          ],*/
-        );
+      onDragCompleted: () {
+        //print('se completo');
       },
     );
   }
+}
+
+class ProfesorCard extends StatelessWidget {
+  final Tutor tutor;
+  final Function() callbackOut;
+  const ProfesorCard({Key? key, required this.tutor, required this.callbackOut})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      width: double.infinity,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                leading: const Icon(
+                  Icons.person,
+                  size: 30,
+                ),
+                title: Text(
+                  '${tutor.name} - ${tutor.code}',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Text(
+                  tutor.mail,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      //border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: DataTable(
+                      columnSpacing: 20,
+                      columns: const [
+                        DataColumn(
+                          label: Text(
+                            'N°',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Nombre',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Correo',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Código',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                      rows: List.generate(
+                        tutor.myStudents.length,
+                        (index) {
+                          final student = tutor.myStudents[index];
+                          return DataRow(cells: [
+                            DataCell(Text(
+                              (index + 1).toString(),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            )),
+                            DataCell(Text(student.name)),
+                            DataCell(Text(student.mail)),
+                            DataCell(Text(student.code)),
+                          ]);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Future<bool> showConfirmacionDialog(
+    BuildContext context, String estudiante, String tutor) {
+  return showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Confirmación'),
+        content: RichText(
+          text: TextSpan(
+            text: '¿Seguro que quieres asignar a ',
+            style: DefaultTextStyle.of(context).style,
+            children: <TextSpan>[
+              TextSpan(
+                text: estudiante,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(text: ' con '),
+              TextSpan(
+                text: tutor,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const TextSpan(text: '?'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pop(false); // Cerrar el diálogo y devolver false
+            },
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pop(true); // Cerrar el diálogo y devolver true
+            },
+            child: const Text('Asignar'),
+          ),
+        ],
+      );
+    },
+  ).then((value) => value ?? false); // Asegurarse de que no se devuelva null
+}
+
+void showMessage(
+    BuildContext context, String text, Color bgColor, Duration duration) {
+  final snackBar = SnackBar(
+    content: Text(
+      text,
+      style: const TextStyle(color: Colors.white),
+    ),
+    backgroundColor: bgColor,
+    duration: duration,
+  );
+
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }

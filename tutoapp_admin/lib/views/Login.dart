@@ -34,12 +34,12 @@ class _LoginState extends State<Login> {
             }
           else
             {
-              showCustomSnackBar(
-                  context, response, Colors.green, const Duration(seconds: 2)),
               //context.watch<UserProvider>().setMail(mail),
               getAdminInfo(context).then((value) {
                 if (!value.containsKey('Error')) {
                   context.read<UserProvider>().insertData(value);
+                  showCustomSnackBar(context, 'Entrando...', Colors.green,
+                      const Duration(seconds: 2));
                   Navigator.pushReplacement(
                       context,
                       PageRouteBuilder(
@@ -72,7 +72,7 @@ class _LoginState extends State<Login> {
         minHeight: 800,
       ),
       child: Scaffold(
-        backgroundColor: Colors.blueGrey[100],
+        backgroundColor: Colors.grey.shade50,
         body: Center(
           child: FractionallySizedBox(
             widthFactor: 0.8,
@@ -82,12 +82,21 @@ class _LoginState extends State<Login> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
-                    'Topografía',
+                    'ADMIN',
                     style: TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Colors.black,
                     ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Divider(color: Colors.black, thickness: 2),
+                  const Text(
+                    'Administrador TutoApp',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w300,
+                        color: Colors.black),
                   ),
                   const SizedBox(height: 20),
                   Form(
@@ -162,7 +171,8 @@ class _LoginState extends State<Login> {
                               vertical: 15,
                               horizontal: 20,
                             ),
-                            backgroundColor: Colors.orange[800],
+                            backgroundColor:
+                                const Color.fromARGB(255, 82, 113, 255),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8.0),
                             ),
@@ -192,8 +202,8 @@ class _LoginState extends State<Login> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  GestureDetector(
+                  const SizedBox(height: 15),
+                  /*GestureDetector(
                     onTap: () {
                       // Handle tap action
                     },
@@ -205,7 +215,7 @@ class _LoginState extends State<Login> {
                         decoration: TextDecoration.underline,
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),

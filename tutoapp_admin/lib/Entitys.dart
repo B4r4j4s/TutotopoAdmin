@@ -2,15 +2,16 @@ class Student {
   int id;
   String name;
   String mail;
+  String code;
 
-  Student(this.id, this.name, this.mail);
+  Student(this.id, this.name, this.mail, this.code);
 
   factory Student.fromMap(Map<String, dynamic> data) {
     return Student(
-      data["ID"],
-      '${data["Name"]} ${data["FirstSurname"]} ${data["SecondSurname"]}',
-      data["Mail"],
-    );
+        data["ID"],
+        '${data["Name"]} ${data["FirstSurname"]} ${data["SecondSurname"]}',
+        data["Mail"],
+        data["Code"]);
   }
 }
 
@@ -18,17 +19,18 @@ class Tutor {
   int id;
   String name;
   String mail;
+  String code;
   List<Student> myStudents = [];
 
-  Tutor(this.id, this.name, this.mail);
+  Tutor(this.id, this.name, this.mail, this.code);
 
   // Constructor factory para crear una instancia de Tutor desde un mapa
   factory Tutor.fromMap(Map<String, dynamic> data) {
     return Tutor(
-      data["ID"],
-      '${data["Name"]} ${data["FirstSurname"]} ${data["SecondSurname"]}',
-      data["Mail"],
-    );
+        data["ID"],
+        '${data["Name"]} ${data["FirstSurname"]} ${data["SecondSurname"]}',
+        data["Mail"],
+        data["Code"]);
   }
 
   void showStudent() {
@@ -42,7 +44,8 @@ class Tutor {
       myStudents.add(Student(
           data["ID"],
           '${data["Name"]} ${data["FirstSurname"]} ${data["SecondSurname"]}',
-          data["Mail"]));
+          data["Mail"],
+          data["Code"]));
     }
   }
 }
